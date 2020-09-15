@@ -1,0 +1,12 @@
+#MySQL Info
+
+MySQL_host: localhost
+MySQL_port: 3306
+MySQL_database: test
+MySQL_username: root
+MySQL_password: password
+MySQL_claimData: claim_data
+
+#Other
+
+World_Name: world

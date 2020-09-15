@@ -1,0 +1,10 @@
+name: EarthServer
+version: 1.0
+main: me.elgamer.earthserver.Main
+description: Claiming System
+depend: [WorldEdit, WorldGuard, LuckPerms, Vault]
+
+commands:
+    claim:
+        usage: /<command>
+        description: Open the claim gui.
