@@ -3,9 +3,7 @@ package me.elgamer.earthserver.utils;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
-
+import me.elgamer.earthserver.Main;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.context.DefaultContextKeys;
 import net.luckperms.api.model.user.User;
@@ -16,8 +14,8 @@ public class Permissions {
 
 	public void addPermission(UUID uuid, String region) {
 
-		LuckPerms lp = getLuckPerms();
-
+		LuckPerms lp = Main.getLuckPerms();
+		
 		UserManager userManager = lp.getUserManager();
 		CompletableFuture<User> userFuture = userManager.loadUser(uuid);
 
@@ -38,7 +36,7 @@ public class Permissions {
 
 	public void removePermission(UUID uuid, String region) {
 
-		LuckPerms lp = getLuckPerms();
+		LuckPerms lp = Main.getLuckPerms();
 
 		UserManager userManager = lp.getUserManager();
 		CompletableFuture<User> userFuture = userManager.loadUser(uuid);
@@ -56,16 +54,6 @@ public class Permissions {
 
 		});
 
-	}
-
-	private LuckPerms getLuckPerms() {
-		Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("LuckPerms");
-
-		if (plugin == null || !(plugin instanceof LuckPerms)) {
-			return null;
-		}
-
-		return (LuckPerms) plugin;
 	}
 
 }

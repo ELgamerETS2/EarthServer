@@ -8,5 +8,6 @@
 	<classpathentry kind="lib" path="C:/Users/Laurens/Downloads/LuckPerms-Bukkit-5.1.93 (1).jar"/>
 	<classpathentry kind="lib" path="C:/Users/Laurens/Downloads/worldedit-bukkit-6.1.9.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Laurens/Downloads/ExtraContexts.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Laurens/Downloads/api-5.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

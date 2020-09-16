@@ -14,6 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import me.elgamer.earthserver.commands.Claim;
 import me.elgamer.earthserver.gui.ClaimGui;
 import me.elgamer.earthserver.listeners.InventoryClicked;
+import net.luckperms.api.LuckPerms;
 import net.milkbowl.vault.permission.Permission;
 
 public class Main extends JavaPlugin {
@@ -25,6 +26,7 @@ public class Main extends JavaPlugin {
 	
 	//Other
 	public static Permission perms = null;
+	public static LuckPerms lp = null;
 	
 	static Main instance;
 	static FileConfiguration config;
@@ -40,7 +42,9 @@ public class Main extends JavaPlugin {
 		
 		//MySQL		
 		mysqlSetup();
-		createTable();
+		
+		//Only enable this is you want the mysql table to generate automatically!
+		//createTable();
 		
 		//Listeners
 		new InventoryClicked(this);
@@ -52,7 +56,10 @@ public class Main extends JavaPlugin {
 		ClaimGui.initialize();
 		
 		//Vault
-		setupPermissions();
+		//setupPermissions();
+		
+		//LuckPerms
+		setupLuckPerms();
 	}
 	
 	public void onDisable() {
@@ -106,6 +113,7 @@ public class Main extends JavaPlugin {
 		this.connection = connection;
 	}
 	
+	@SuppressWarnings("unused")
 	private boolean setupPermissions() {
         RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
         perms = rsp.getProvider();
@@ -118,6 +126,16 @@ public class Main extends JavaPlugin {
 	
 	public static Main getInstance() {
 		return instance;
+	}
+	
+	private boolean setupLuckPerms() {
+		RegisteredServiceProvider<LuckPerms> provider = getServer().getServicesManager().getRegistration(LuckPerms.class);
+		LuckPerms lp = provider.getProvider();
+		return lp != null;
+	}
+	
+	public static LuckPerms getLuckPerms() {
+		return lp;
 	}
 	
 	public void createTable() {
