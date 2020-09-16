@@ -43,8 +43,8 @@ public class Main extends JavaPlugin {
 		//MySQL		
 		mysqlSetup();
 		
-		//Only enable this is you want the mysql table to generate automatically!
-		//createTable();
+		//Creates the mysql table if not existing
+		createTable();
 		
 		//Listeners
 		new InventoryClicked(this);
@@ -130,7 +130,7 @@ public class Main extends JavaPlugin {
 	
 	private boolean setupLuckPerms() {
 		RegisteredServiceProvider<LuckPerms> provider = getServer().getServicesManager().getRegistration(LuckPerms.class);
-		LuckPerms lp = provider.getProvider();
+		lp = provider.getProvider();
 		return lp != null;
 	}
 	
@@ -141,7 +141,7 @@ public class Main extends JavaPlugin {
 	public void createTable() {
 		try {
 			PreparedStatement statement = instance.getConnection().prepareStatement
-					("CREATE TABLE IF NOT EXISTS claim_data"
+					("CREATE TABLE IF NOT EXISTS " + claimData
 							+ " (REGION_ID TEXT NOT NULL , REGION_OWNER TEXT NOT NULL , MEMBERS TEXT NULL DEFAULT NULL , IS_PUBLIC TEXT NOT NULL DEFAULT 'false' , UNIQUE (REGION_ID))");
 			statement.executeUpdate();
 

@@ -44,13 +44,14 @@ public class ClaimGui {
 		
 		ClaimRegion claim = new ClaimRegion();
 		
-		if (clicked.getItemMeta().getDisplayName()== null) {
+		if (clicked == null) {
 					
 	    } else if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(Utils.chat("&cClaim"))) {
 			claim.createRegion(p, getRegion(p));
 		} else if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(Utils.chat("&cTeam Claim"))) {
-			claim.createRegion(p, getRegion(p));
-			claim.setPublic(p, getRegion(p));
+			if (claim.createRegion(p, getRegion(p))) {
+				claim.setPublic(p, getRegion(p));
+			}
 		} else if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(Utils.chat("&cPublic"))) {
 			claim.setPublic(p, getRegion(p));
 		} else if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(Utils.chat("&cPrivate"))) {

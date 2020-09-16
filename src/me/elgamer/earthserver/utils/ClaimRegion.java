@@ -52,7 +52,7 @@ public class ClaimRegion {
 				p.sendMessage(ChatColor.RED + ("The region " + region + " is already claimed by " + regionOwner + "!"));
 				p.sendMessage(ChatColor.RED + ("If you believe this is wrongly claimed please contact staff!"));
 			}
-			return true;
+			return false;
 		}
 
 		//Use the region coordinates to get the min and max location
@@ -85,6 +85,8 @@ public class ClaimRegion {
 		Permissions perms = new Permissions();
 		
 		perms.addPermission(p.getUniqueId(), region);
+		
+		p.sendMessage(ChatColor.GREEN + "Region " + region + " created!");
 
 		//Save the new region
 		try {
@@ -106,7 +108,7 @@ public class ClaimRegion {
 
 		if (mysql.regionExists(region)) {
 
-			if (p.getUniqueId().toString() == mysql.getOwner(region)) {
+			if (p.getUniqueId().toString().equals(mysql.getOwner(region))) {
 				World world = Bukkit.getWorld(config.getString("World_Name"));
 				
 				RegionContainer container = wg.getRegionContainer();
@@ -122,6 +124,11 @@ public class ClaimRegion {
 
 					claim.setMembers(members);
 					mysql.setPublic(region);
+					
+					Permissions perms = new Permissions();
+					perms.addGroupPermission("builder", region);
+					
+					p.sendMessage(ChatColor.GREEN + "Region " + region + " is now open for all builders!");
 
 					try {
 						regions.save();
@@ -172,6 +179,11 @@ public class ClaimRegion {
 					claim.setMembers(members);
 					mysql.setPrivate(region);
 
+					Permissions perms = new Permissions();
+					perms.removeGroupPermission("builder", region);
+					
+					p.sendMessage(ChatColor.RED + "Region " + region + " is now private, only the region owner and members have access!");
+					
 					try {
 						regions.save();
 					} catch (StorageException e1) {
@@ -249,6 +261,8 @@ public class ClaimRegion {
 										Permissions perms = new Permissions();
 										
 										perms.addPermission(p.getUniqueId(), region);
+										
+										p.sendMessage(ChatColor.GREEN + name + "added to region " + region + "!");
 
 										try {
 											regions.save();
@@ -347,6 +361,8 @@ public class ClaimRegion {
 										
 										perms.removePermission(p.getUniqueId(), region);
 										
+										p.sendMessage(ChatColor.RED + name + "removed from region " + region + "!");
+										
 										try {
 											regions.save();
 										} catch (StorageException e1) {
@@ -404,23 +420,23 @@ public class ClaimRegion {
 				RegionManager regions = container.get(world);
 
 				regions.removeRegion(region);
-				String members = mysql.removeRegion(region);
-				
-				if (members == null) {
-					return true;
-				}
-				
-				String[] regionMembers = members.split(",");
 				
 				Permissions perms = new Permissions();
 				perms.removePermission(p.getUniqueId(), region);
-			
-				for (int i = 0 ; i < regionMembers.length ; i++) {
-					
-					perms.removePermission(UUID.fromString(regionMembers[i]), region);
-					
-				}
 				
+				String members = mysql.removeRegion(region);
+				
+				p.sendMessage(ChatColor.RED + "Region " + region + " removed!");
+				
+				if (members != null) {
+					String[] regionMembers = members.split(",");
+					
+					for (int i = 0 ; i < regionMembers.length ; i++) {
+						
+						perms.removePermission(UUID.fromString(regionMembers[i]), region);
+						
+					}
+				}
 				
 				try {
 					regions.save();
