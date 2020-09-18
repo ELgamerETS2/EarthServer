@@ -1,16 +1,15 @@
 package me.elgamer.earthserver.commands;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.elgamer.earthserver.gui.ClaimGui;
 import me.elgamer.earthserver.utils.ClaimRegion;
-import net.md_5.bungee.api.ChatColor;
 
-public class Claim implements CommandExecutor {
+public class Teamclaim implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -24,32 +23,25 @@ public class Claim implements CommandExecutor {
 		//Convert sender to player
 		Player p = (Player) sender;
 
-		//Check if player has permission
-		if (!(p.hasPermission("earthserver.claim"))) {
+		if (!(p.hasPermission("earthserver.teamclaim"))) {
 			p.sendMessage(ChatColor.RED + "You do not have permission for this command!");
 			return true;
 		}
-		
+
 		ClaimRegion claim = new ClaimRegion();
 
-		//If command is run without args then open the claim gui
-		if (args.length == 0) {
-			p.openInventory(ClaimGui.GUI(p));
+		//If args = null then run teamclaim
+		if (args.length == 0) { 
+
+			if (claim.createRegion(p, getRegion(p))) {
+				claim.setPublic(p, getRegion(p));
+			}
 			return true;
+
 		}
 
 		if (args.length > 1) {
 			return false;
-		}
-		
-		if (args[0].equalsIgnoreCase("help")) {
-			claim.help(p);
-			return true;
-		}
-		
-		if (args[0].equalsIgnoreCase("info")) {
-			claim.info(p, getRegion(p));
-			return true;
 		}
 
 		try {
@@ -61,9 +53,10 @@ public class Claim implements CommandExecutor {
 			}
 
 			String[] points = getRegions(p, radius);
-			
 			for (int i = 0; i < points.length; i++) {
-				claim.createRegion(p, points[i]);
+				if (claim.createRegion(p, points[i])) {
+					claim.setPublic(p, points[i]);
+				}
 			}
 
 		} catch (NumberFormatException e) {

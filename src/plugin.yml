@@ -6,5 +6,26 @@ depend: [WorldEdit, WorldGuard, LuckPerms, Vault]
 
 commands:
     claim:
-        usage: /<command>
-        description: Open the claim gui.
+        usage: /<command> [radius]
+        description: Opens the claim gui or claims regions in a radius around the player.
+    unclaim:
+        usage: /<command> [radius]
+        description: Unclaims in a radius around the player, radius null = only regions player is in.
+    teamclaim:
+        usage: /<command> [radius]
+        description: Teamclaims regions in a radius around the player, radius null = only regions player is in.
+    add:
+        usage: /<command> <user> [radius]
+        description: Adds a certain player to regions in a radius around the player, radius null = only regions player is in.
+    remove:
+        usage: /<command> <user> [radius]
+        description: Removes a certain player to regions in a radius around the player, radius null = only regions player is in.       
+    public:
+        usage: /<command> [radius]
+        description: Makes regions public to builders in a radius around the player, radius null = only regions player is in.
+    private:
+        usage: /<command> [radius]
+        description: Makes regions private in a radius around the player, radius null = only regions player is in. 
+    adminclaim:
+        usage: /adminclaim help
+        description: Admin commands for regions, allows unclaiming, transferring ownership, adding/removing members and changing regions to public/private. 

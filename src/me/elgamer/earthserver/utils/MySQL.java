@@ -188,5 +188,20 @@ public class MySQL {
 
 		return null;
 	}
+	
+	public boolean transferowner(String uuid, String region) {
+		try {
+			PreparedStatement statement = instance.getConnection().prepareStatement
+					("UPDATE " + instance.claimData + " SET REGION_OWNER=? WHERE REGION_ID=?");
+			statement.setString(1,uuid);
+			statement.setString(2,region);
+			statement.executeUpdate();
+			return true;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 
 }

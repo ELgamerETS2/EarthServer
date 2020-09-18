@@ -136,15 +136,15 @@ public class ClaimRegion {
 						e1.printStackTrace();
 					}
 				} else {
-					p.sendMessage(ChatColor.RED + "This region is already public!");
+					p.sendMessage(ChatColor.RED + "The region " + region + " is already public!");
 				}
 
 			} else {
-				p.sendMessage(ChatColor.RED + "You do not own this region!");
+				p.sendMessage(ChatColor.RED + "You do not own the region " + region +"!");
 			}
 
 		} else {
-			p.sendMessage(ChatColor.RED + "This region does not exists!");
+			p.sendMessage(ChatColor.RED + "The region " + region + " does not exists!");
 			return false;
 		}
 
@@ -190,15 +190,15 @@ public class ClaimRegion {
 						e1.printStackTrace();
 					}
 				} else {
-					p.sendMessage(ChatColor.RED + "This region is already private!");
+					p.sendMessage(ChatColor.RED + "The region " + region + " is already public!");
 				}
 
 			} else {
-				p.sendMessage(ChatColor.RED + "You do not own this region!");
+				p.sendMessage(ChatColor.RED + "You do not own the region " + region +"!");
 			}
 
 		} else {
-			p.sendMessage(ChatColor.RED + "This region does not exists!");
+			p.sendMessage(ChatColor.RED + "The region " + region + " does not exists!");
 			return false;
 		}
 
@@ -222,6 +222,7 @@ public class ClaimRegion {
 
 				AnvilGui gui = new AnvilGui(p, new AnvilGui.AnvilClickEventHandler(){
 
+					@SuppressWarnings("deprecation")
 					@Override
 					public void onAnvilClick(AnvilClickEvent e) {
 						if (e.getSlot() == AnvilGui.AnvilSlot.OUTPUT) {
@@ -237,7 +238,10 @@ public class ClaimRegion {
 								Player user = Bukkit.getPlayer(name);
 
 								if (user == null) {
-									p.sendMessage(ChatColor.RED + "This player is not online!");
+									user = Bukkit.getOfflinePlayer(name).getPlayer();
+									if (user == null) {
+										p.sendMessage("The user " + name + " does not exist on this server!");
+									}
 
 								} else {
 
@@ -270,12 +274,12 @@ public class ClaimRegion {
 											e1.printStackTrace();
 										}
 									} else {
-										p.sendMessage(ChatColor.RED + "This user is already a member of this region!");
+										p.sendMessage(ChatColor.RED + name + " is already a member of this region!");
 									}
 								}
 
 							} else {
-								p.sendMessage(ChatColor.RED + "This is not a valid username!");
+								p.sendMessage(ChatColor.RED + name + " is not a valid username!");
 							}
 						} else {
 							e.setWillClose(false);
@@ -283,11 +287,11 @@ public class ClaimRegion {
 						}
 					}
 
-				},"Please input Plot Name!");
+				},"Please input username!");
 
 				ItemStack i = new ItemStack(Material.NAME_TAG);
 				ItemMeta im = i.getItemMeta();
-				im.setDisplayName("");
+				im.setDisplayName("Input user");
 				i.setItemMeta(im);
 
 				gui.setSlot(AnvilGui.AnvilSlot.INPUT_LEFT, i);
@@ -295,10 +299,12 @@ public class ClaimRegion {
 				gui.open();
 
 			} else {
-				p.sendMessage(ChatColor.RED + "You do not own this region!");
+				p.sendMessage(ChatColor.RED + "You do not own the region " + region +"!");
 			}
+
 		} else {
-			p.sendMessage(ChatColor.RED + "This region does not exists!");
+			p.sendMessage(ChatColor.RED + "The region " + region + " does not exists!");
+			return false;
 		}
 
 		return false;
@@ -321,6 +327,7 @@ public class ClaimRegion {
 
 				AnvilGui gui = new AnvilGui(p, new AnvilGui.AnvilClickEventHandler(){
 
+					@SuppressWarnings("deprecation")
 					@Override
 					public void onAnvilClick(AnvilClickEvent e) {
 						if (e.getSlot() == AnvilGui.AnvilSlot.OUTPUT) {
@@ -336,7 +343,10 @@ public class ClaimRegion {
 								Player user = Bukkit.getPlayer(name);
 
 								if (user == null) {
-									p.sendMessage(ChatColor.RED + "This player is not online!");
+									user = Bukkit.getOfflinePlayer(name).getPlayer();
+									if (user == null) {
+										p.sendMessage("The user " + name + " does not exist on this server!");
+									}
 
 								} else {
 
@@ -369,12 +379,12 @@ public class ClaimRegion {
 											e1.printStackTrace();
 										}
 									} else {
-										p.sendMessage(ChatColor.RED + "This user not a member of this region!");
+										p.sendMessage(ChatColor.RED + name + " is not a member of this region!");
 									}
 								}
 
 							} else {
-								p.sendMessage(ChatColor.RED + "This is not a valid username!");
+								p.sendMessage(ChatColor.RED + name + " is not a valid username!");
 							}
 						} else {
 							e.setWillClose(false);
@@ -382,21 +392,23 @@ public class ClaimRegion {
 						}
 					}
 
-				},"Please input Plot Name!");
+				},"Please input username!");
 
 				ItemStack i = new ItemStack(Material.NAME_TAG);
 				ItemMeta im = i.getItemMeta();
-				im.setDisplayName("");
+				im.setDisplayName("Input user");
 				i.setItemMeta(im);
 
 				gui.setSlot(AnvilGui.AnvilSlot.INPUT_LEFT, i);
 
 				gui.open();
 			} else {
-				p.sendMessage(ChatColor.RED + "You do not own this region!");
+				p.sendMessage(ChatColor.RED + "You do not own the region " + region +"!");
 			}
+
 		} else {
-			p.sendMessage(ChatColor.RED + "This region does not exists!");
+			p.sendMessage(ChatColor.RED + "The region " + region + " does not exists!");
+			return false;
 		}
 
 		return false;
@@ -445,10 +457,12 @@ public class ClaimRegion {
 				}
 				
 			} else {
-				p.sendMessage(ChatColor.RED + "You do not own this region!");
+				p.sendMessage(ChatColor.RED + "You do not own the region " + region +"!");
 			}
+
 		} else {
-			p.sendMessage(ChatColor.RED + "This region does not exists!");
+			p.sendMessage(ChatColor.RED + "The region " + region + " does not exists!");
+			return false;
 		}
 				
 		return true;
@@ -462,6 +476,178 @@ public class ClaimRegion {
 		}
 
 		return (WorldGuardPlugin) plugin;
+	}
+	
+	@SuppressWarnings("deprecation")
+	public boolean addMember(Player p, String region, String name) {
+
+		Main instance = Main.getInstance();
+		FileConfiguration config = instance.getConfig();
+
+		MySQL mysql = new MySQL();
+		WorldGuardPlugin wg = getWorldGuard();
+
+		if (mysql.regionExists(region)) {
+
+			if (p.getUniqueId().toString().equals(mysql.getOwner(region))) {
+				
+				Player user = Bukkit.getPlayer(name);
+
+				if (user == null) {
+					user = Bukkit.getOfflinePlayer(name).getPlayer();
+					if (user == null) {
+						p.sendMessage("The user " + name + " does not exist on this server!");
+					}
+
+				} else {
+
+					World world = Bukkit.getWorld(config.getString("World_Name"));
+					
+					RegionContainer container = wg.getRegionContainer();
+					RegionManager regions = container.get(world);
+
+					ProtectedRegion claim = regions.getRegion(region);
+					DefaultDomain members = claim.getMembers();
+
+					Set<String> set = members.getPlayers();
+
+					if (!(set.contains(name))) {
+
+						members.addPlayer(name);
+
+						claim.setMembers(members);
+						mysql.addMember(region, user.getUniqueId().toString());
+						
+						Permissions perms = new Permissions();
+						
+						perms.addPermission(p.getUniqueId(), region);
+						
+						p.sendMessage(ChatColor.GREEN + name + "added to region " + region + "!");
+
+						try {
+							regions.save();
+						} catch (StorageException e1) {
+							e1.printStackTrace();
+						}
+					} else {
+						p.sendMessage(ChatColor.RED + name + " is already a member of the region " + region + "!");
+					}
+				}
+
+			} else {
+				p.sendMessage(ChatColor.RED + "You do not own the region " + region +"!");
+			}
+
+		} else {
+			p.sendMessage(ChatColor.RED + "The region " + region + " does not exists!");
+			return false;
+		}
+
+		return false;
+	}
+
+	@SuppressWarnings("deprecation")
+	public boolean removeMember(Player p, String region, String name) {
+
+		Main instance = Main.getInstance();
+		FileConfiguration config = instance.getConfig();
+
+		MySQL mysql = new MySQL();
+		WorldGuardPlugin wg = getWorldGuard();
+
+		if (mysql.regionExists(region)) {
+
+			if (p.getUniqueId().toString().equals(mysql.getOwner(region))) {
+				
+				Player user = Bukkit.getPlayer(name);
+
+				if (user == null) {
+					user = Bukkit.getOfflinePlayer(name).getPlayer();
+					if (user == null) {
+						p.sendMessage("The user " + name + " does not exist on this server!");
+					}
+
+				} else {
+
+					World world = Bukkit.getWorld(config.getString("World_Name"));
+					
+					RegionContainer container = wg.getRegionContainer();
+					RegionManager regions = container.get(world);
+
+					ProtectedRegion claim = regions.getRegion(region);
+					DefaultDomain members = claim.getMembers();
+
+					Set<String> set = members.getPlayers();
+
+					if (!(set.contains(name))) {
+
+						members.removePlayer(name);
+
+						claim.setMembers(members);
+						mysql.removeMember(region, user.getUniqueId().toString());
+
+						Permissions perms = new Permissions();
+						
+						perms.removePermission(p.getUniqueId(), region);
+						
+						p.sendMessage(ChatColor.RED + name + "removed from region " + region + "!");
+						
+						try {
+							regions.save();
+						} catch (StorageException e1) {
+							e1.printStackTrace();
+						}
+					} else {
+						p.sendMessage(ChatColor.RED + name + " is not a member of this region!");
+					}
+				}
+
+			} else {
+				p.sendMessage(ChatColor.RED + "You do not own the region " + region +"!");
+			}
+
+		} else {
+			p.sendMessage(ChatColor.RED + "The region " + region + " does not exists!");
+			return false;
+		}
+
+		return false;
+	}
+	
+	public void help(Player p) {
+		
+		p.closeInventory();
+		p.sendMessage(Utils.chat("&7To open the claim gui do &a/claim &7or use the commands below!"));
+		p.sendMessage(Utils.chat("&a/claim info &7returns the region name and owner!"));
+		p.sendMessage(Utils.chat("&a/claim [radius] &7claims all 512x512 regions in a square radius of regions!"));
+		p.sendMessage(Utils.chat("&a/unclaim [radius] &7unclaims all 512x512 regions in a square radius of regions!"));
+		p.sendMessage(Utils.chat("&a/teamclaim [radius] &7claims all 512x512 regions in a square radius of regions and makes them public to all builders!"));
+		p.sendMessage(Utils.chat("&a/add <user> [radius] &7adds the specified user to all 512x512 regions in a square radius of regions!"));
+		p.sendMessage(Utils.chat("&a/remove <user> [radius] &7removes the specified user to all 512x512 regions in a square radius of regions!"));
+		p.sendMessage(Utils.chat("&a/public [radius] &7makes all 512x512 regions public to builders in a square radius of regions!"));
+		p.sendMessage(Utils.chat("&a/private [radius] &7makes all 512x512 regions private in a square radius of regions!"));
+		
+	}
+	
+	public void info(Player p, String region) {
+		
+		MySQL mysql = new MySQL();
+		if (mysql.regionExists(region)) {
+			
+			if (Bukkit.getPlayer(mysql.getOwner(region)) != null) {
+				String regionOwner = Bukkit.getPlayer(UUID.fromString(mysql.getOwner(region))).getName();
+				p.sendMessage(ChatColor.GREEN + ("The region " + region + " is claimed by " + regionOwner + "!"));
+			} else {
+				String regionOwner = Bukkit.getOfflinePlayer(UUID.fromString(mysql.getOwner(region))).getName();
+				p.sendMessage(ChatColor.GREEN + ("The region " + region + " is claimed by " + regionOwner + "!"));
+			}
+			
+		} else {
+			
+			p.sendMessage(ChatColor.GREEN + "The region " + region + " is unclaimed!");
+			
+		}
+		
 	}
 
 }

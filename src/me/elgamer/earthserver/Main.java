@@ -11,7 +11,14 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import me.elgamer.earthserver.commands.Add;
+import me.elgamer.earthserver.commands.Adminclaim;
 import me.elgamer.earthserver.commands.Claim;
+import me.elgamer.earthserver.commands.Private;
+import me.elgamer.earthserver.commands.Public;
+import me.elgamer.earthserver.commands.Remove;
+import me.elgamer.earthserver.commands.Teamclaim;
+import me.elgamer.earthserver.commands.Unclaim;
 import me.elgamer.earthserver.gui.ClaimGui;
 import me.elgamer.earthserver.listeners.InventoryClicked;
 import net.luckperms.api.LuckPerms;
@@ -51,12 +58,19 @@ public class Main extends JavaPlugin {
 		
 		//Commands
 		getCommand("claim").setExecutor(new Claim());
+		getCommand("unclaim").setExecutor(new Unclaim());
+		getCommand("teamclaim").setExecutor(new Teamclaim());
+		getCommand("add").setExecutor(new Add());
+		getCommand("remove").setExecutor(new Remove());
+		getCommand("public").setExecutor(new Public());
+		getCommand("private").setExecutor(new Private());
+		getCommand("adminclaim").setExecutor(new Adminclaim());
 		
 		//GUI
 		ClaimGui.initialize();
 		
 		//Vault
-		//setupPermissions();
+		setupPermissions();
 		
 		//LuckPerms
 		setupLuckPerms();

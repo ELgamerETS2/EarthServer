@@ -1,59 +1,55 @@
 package me.elgamer.earthserver.commands;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.elgamer.earthserver.gui.ClaimGui;
 import me.elgamer.earthserver.utils.ClaimRegion;
-import net.md_5.bungee.api.ChatColor;
 
-public class Claim implements CommandExecutor {
+public class Remove implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
 		//Check is command sender is a player
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("&cYou cannot claim a region!");
+			sender.sendMessage("&cYou cannot remove a player from a region!");
 			return true;
 		}
 
 		//Convert sender to player
 		Player p = (Player) sender;
 
-		//Check if player has permission
-		if (!(p.hasPermission("earthserver.claim"))) {
+		if (!(p.hasPermission("earthserver.remove"))) {
 			p.sendMessage(ChatColor.RED + "You do not have permission for this command!");
 			return true;
 		}
-		
+
 		ClaimRegion claim = new ClaimRegion();
 
-		//If command is run without args then open the claim gui
-		if (args.length == 0) {
-			p.openInventory(ClaimGui.GUI(p));
+		if (args.length == 1) { 
+
+			claim.removeMember(p, getRegion(p), args[0]);
 			return true;
+			
 		}
 
-		if (args.length > 1) {
+		if (args.length != 2) {
 			return false;
 		}
 		
-		if (args[0].equalsIgnoreCase("help")) {
-			claim.help(p);
-			return true;
-		}
-		
-		if (args[0].equalsIgnoreCase("info")) {
-			claim.info(p, getRegion(p));
-			return true;
+		Player user = Bukkit.getPlayer(args[0]);
+
+		if (user == null) {
+			p.sendMessage(ChatColor.RED + args[0] + " is not online!");
 		}
 
 		try {
-			int radius = Integer.parseInt(args[0]);			
+			int radius = Integer.parseInt(args[1]);			
 
 			if (radius > 2 || radius < 0) {
 				p.sendMessage(ChatColor.RED + "You may only use a maximum radius of 2");
@@ -61,9 +57,9 @@ public class Claim implements CommandExecutor {
 			}
 
 			String[] points = getRegions(p, radius);
-			
 			for (int i = 0; i < points.length; i++) {
-				claim.createRegion(p, points[i]);
+				claim.removeMember(p, points[i], args[0]);
+
 			}
 
 		} catch (NumberFormatException e) {
