@@ -82,9 +82,7 @@ public class ClaimRegion {
 		
 		mysql.createRegion(p.getUniqueId().toString(), region);
 		
-		Permissions perms = new Permissions();
-		
-		perms.addPermission(p.getUniqueId(), region);
+		mysql.addPermission(p.getUniqueId().toString(), region);
 		
 		p.sendMessage(ChatColor.GREEN + "Region " + region + " created!");
 
@@ -125,8 +123,7 @@ public class ClaimRegion {
 					claim.setMembers(members);
 					mysql.setPublic(region);
 					
-					Permissions perms = new Permissions();
-					perms.addGroupPermission("builder", region);
+					mysql.addPermission("builder", region);
 					
 					p.sendMessage(ChatColor.GREEN + "Region " + region + " is now open for all builders!");
 
@@ -179,8 +176,7 @@ public class ClaimRegion {
 					claim.setMembers(members);
 					mysql.setPrivate(region);
 
-					Permissions perms = new Permissions();
-					perms.removeGroupPermission("builder", region);
+					mysql.removePermission("builder", region);
 					
 					p.sendMessage(ChatColor.RED + "Region " + region + " is now private, only the region owner and members have access!");
 					
@@ -261,10 +257,8 @@ public class ClaimRegion {
 
 										claim.setMembers(members);
 										mysql.addMember(region, user.getUniqueId().toString());
-										
-										Permissions perms = new Permissions();
-										
-										perms.addPermission(p.getUniqueId(), region);
+
+										mysql.addPermission(p.getUniqueId().toString(), region);
 										
 										p.sendMessage(ChatColor.GREEN + name + "added to region " + region + "!");
 
@@ -367,9 +361,7 @@ public class ClaimRegion {
 										claim.setMembers(members);
 										mysql.removeMember(region, user.getUniqueId().toString());
 
-										Permissions perms = new Permissions();
-										
-										perms.removePermission(p.getUniqueId(), region);
+										mysql.removePermission(p.getUniqueId().toString(), region);
 										
 										p.sendMessage(ChatColor.RED + name + "removed from region " + region + "!");
 										
@@ -433,8 +425,7 @@ public class ClaimRegion {
 
 				regions.removeRegion(region);
 				
-				Permissions perms = new Permissions();
-				perms.removePermission(p.getUniqueId(), region);
+				mysql.removePermission(p.getUniqueId().toString(), region);
 				
 				String members = mysql.removeRegion(region);
 				
@@ -445,7 +436,7 @@ public class ClaimRegion {
 					
 					for (int i = 0 ; i < regionMembers.length ; i++) {
 						
-						perms.removePermission(UUID.fromString(regionMembers[i]), region);
+						mysql.removePermission(regionMembers[i], region);
 						
 					}
 				}
@@ -518,9 +509,7 @@ public class ClaimRegion {
 						claim.setMembers(members);
 						mysql.addMember(region, user.getUniqueId().toString());
 						
-						Permissions perms = new Permissions();
-						
-						perms.addPermission(p.getUniqueId(), region);
+						mysql.addPermission(p.getUniqueId().toString(), region);
 						
 						p.sendMessage(ChatColor.GREEN + name + "added to region " + region + "!");
 
@@ -586,9 +575,7 @@ public class ClaimRegion {
 						claim.setMembers(members);
 						mysql.removeMember(region, user.getUniqueId().toString());
 
-						Permissions perms = new Permissions();
-						
-						perms.removePermission(p.getUniqueId(), region);
+						mysql.removePermission(p.getUniqueId().toString(), region);
 						
 						p.sendMessage(ChatColor.RED + name + "removed from region " + region + "!");
 						

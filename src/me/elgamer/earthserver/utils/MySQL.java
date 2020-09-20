@@ -188,7 +188,7 @@ public class MySQL {
 
 		return null;
 	}
-	
+
 	public boolean transferowner(String uuid, String region) {
 		try {
 			PreparedStatement statement = instance.getConnection().prepareStatement
@@ -202,6 +202,110 @@ public class MySQL {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	public boolean addPermission(String uuid, String region) {
+		try {
+
+			PreparedStatement statement = instance.getConnection().prepareStatement
+					("SELECT * FROM " + instance.userData + " WHERE UUID=?");
+			statement.setString(1, uuid);
+			ResultSet results = statement.executeQuery();
+
+			if (results.next()) {
+				String regions = results.getString("ADD_PERM");
+				if (region != null) {
+					regions = regions + ";" + region;
+				} else {
+					regions = region;
+				}
+				statement = instance.getConnection().prepareStatement
+						("UPDATE " + instance.userData + " SET ADD_PERM=? WHERE UUID=?");
+				statement.setString(2,uuid);
+				statement.setString(1,regions);
+				statement.executeUpdate();
+			} else {
+				PreparedStatement insert = instance.getConnection().prepareStatement
+						("INSERT INTO " + instance.userData + " (UUID,ADD_PERM,REMOVE_PERM) VALUE (?,?,?)");
+				insert.setString(1, uuid);
+				insert.setString(2, region);
+				insert.setString(3, null);
+				insert.executeUpdate();
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public boolean removePermission(String uuid, String region) {
+		try {
+
+			PreparedStatement statement = instance.getConnection().prepareStatement
+					("SELECT * FROM " + instance.userData + " WHERE UUID=?");
+			statement.setString(1, uuid);
+			ResultSet results = statement.executeQuery();
+
+			if (results.next()) {
+				String regions = results.getString("REMOVE_PERM");
+				if (region != null) {
+					regions = regions + ";" + region;
+				} else {
+					regions = region;
+				}
+				statement = instance.getConnection().prepareStatement
+						("UPDATE " + instance.userData + " SET REMOVE_PERM=? WHERE UUID=?");
+				statement.setString(2,uuid);
+				statement.setString(1,regions);
+				statement.executeUpdate();
+			} else {
+				PreparedStatement insert = instance.getConnection().prepareStatement
+						("INSERT INTO " + instance.userData + " (UUID,ADD_PERM,REMOVE_PERM) VALUE (?,?,?)");
+				insert.setString(1, uuid);
+				insert.setString(2, null);
+				insert.setString(3, region);
+				insert.executeUpdate();
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+
+	public String[] getPermission() {
+		try {
+
+			PreparedStatement statement = instance.getConnection().prepareStatement
+					("SELECT * FROM " + instance.userData);
+			ResultSet results = statement.executeQuery();
+
+			if (results.next()) {
+
+				String uuid;
+				String add;
+				String remove;
+
+				uuid = results.getString("UUID");
+				add = results.getString("ADD_PERM");
+				remove = results.getString("REMOVE_PERM");
+
+				statement = instance.getConnection().prepareStatement
+						("DELETE FROM " + instance.userData + " WHERE UUID=?");
+				statement.setString(1, uuid);
+				statement.executeUpdate();
+
+				return (new String[]{uuid, add, remove});
+			} else { 
+				return null;
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

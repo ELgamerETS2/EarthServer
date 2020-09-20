@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.elgamer.earthserver.utils.ClaimRegion;
+import me.elgamer.earthserver.utils.Permissions;
 
 public class Add implements CommandExecutor {
 
@@ -34,6 +35,7 @@ public class Add implements CommandExecutor {
 		if (args.length == 1) { 
 
 			claim.addMember(p, getRegion(p), args[0]);
+			Permissions.updatePermissions();
 			return true;
 			
 		}
@@ -46,6 +48,7 @@ public class Add implements CommandExecutor {
 
 		if (user == null) {
 			p.sendMessage(ChatColor.RED + args[0] + " is not online!");
+			return true;
 		}
 
 		try {
@@ -61,6 +64,8 @@ public class Add implements CommandExecutor {
 				claim.addMember(p, points[i], args[0]);
 
 			}
+			
+			Permissions.updatePermissions();
 
 		} catch (NumberFormatException e) {
 			p.sendMessage(ChatColor.RED + "You must use an integer value between 0 and 2");

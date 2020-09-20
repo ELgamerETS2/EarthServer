@@ -14,81 +14,101 @@ import net.luckperms.api.node.types.PermissionNode;
 
 public class Permissions {
 
-	public void addPermission(UUID uuid, String region) {
+	public static void updatePermissions() {
 
 		LuckPerms lp = Main.getLuckPerms();
+		MySQL mysql = new MySQL();
+		
+		while (true) {
+			
+			String[] entry = mysql.getPermission();
+			
+			if (entry == null) {
+				break;
+			}
 
-		UserManager userManager = lp.getUserManager();
-		CompletableFuture<User> userFuture = userManager.loadUser(uuid);
+			String uuid = entry[0];
 
-		userFuture.thenAcceptAsync(user -> {
+			if (uuid != "builder") {
 
-			PermissionNode node = PermissionNode.builder("worldedit.*")
-					.value(true)
-					.withContext(ImmutableContextSet.of("wg-region", region))
-					.build();
+				UserManager userManager = lp.getUserManager();
+				CompletableFuture<User> userFuture = userManager.loadUser(UUID.fromString(uuid));
 
-			user.data().add(node);
+				userFuture.thenAcceptAsync(user -> {
 
-			userManager.saveUser(user);
+					if (entry[1] != null) {
 
-		});
+						String[] add = entry[1].split(";");
 
-	}
+						for (int i = 0; i < add.length; i++) {
 
-	public void removePermission(UUID uuid, String region) {
+							PermissionNode node = PermissionNode.builder("worldedit.*")
+									.value(true)
+									.withContext(ImmutableContextSet.of("wg-region", add[i]))
+									.build();
 
-		LuckPerms lp = Main.getLuckPerms();
+							user.data().add(node);
 
-		UserManager userManager = lp.getUserManager();
-		CompletableFuture<User> userFuture = userManager.loadUser(uuid);
+						}
+					}
 
-		userFuture.thenAcceptAsync(user -> {
+					if (entry[2] != null) {
 
-			PermissionNode node = PermissionNode.builder("worldedit.*")
-					.value(true)
-					.withContext(ImmutableContextSet.of("wg-region", region))
-					.build();
+						String[] remove = entry[2].split(";");
 
-			user.data().remove(node);
+						for (int j = 0; j < remove.length; j++) {
 
-			userManager.saveUser(user);
+							PermissionNode node = PermissionNode.builder("worldedit.*")
+									.value(true)
+									.withContext(ImmutableContextSet.of("wg-region", remove[j]))
+									.build();
 
-		});
+							user.data().remove(node);
+						}
+					}
 
-	}
+					userManager.saveUser(user);
 
-	public void addGroupPermission(String group, String region) {
+				});
+			} else {
 
-		LuckPerms lp = Main.getLuckPerms();
+				Group gp = lp.getGroupManager().getGroup(uuid);				
 
-		Group gp = lp.getGroupManager().getGroup(group);
+				if (entry[1] != null) {
 
-		PermissionNode node = PermissionNode.builder("worldedit.*")
-				.value(true)
-				.withContext(ImmutableContextSet.of("wg-region", region))
-				.build();
+					String[] add = entry[1].split(",");
 
-		gp.data().add(node);
+					for (int i = 0; i < add.length; i++) {
 
-		lp.getGroupManager().saveGroup(gp);
+						PermissionNode node = PermissionNode.builder("worldedit.*")
+								.value(true)
+								.withContext(ImmutableContextSet.of("wg-region", add[i]))
+								.build();
 
-	}
+						gp.data().add(node);
 
-	public void removeGroupPermission(String group, String region) {
+					}
+				}
 
-		LuckPerms lp = Main.getLuckPerms();
+				if (entry[2] != null) {
 
-		Group gp = lp.getGroupManager().getGroup(group);
+					String[] remove = entry[2].split(",");
 
-		PermissionNode node = PermissionNode.builder("worldedit.*")
-				.value(true)
-				.withContext(ImmutableContextSet.of("wg-region", region))
-				.build();
+					for (int j = 0; j < remove.length; j++) {
 
-		gp.data().remove(node);
+						PermissionNode node = PermissionNode.builder("worldedit.*")
+								.value(true)
+								.withContext(ImmutableContextSet.of("wg-region", remove[j]))
+								.build();
 
-		lp.getGroupManager().saveGroup(gp);
+						gp.data().remove(node);
+					}
+				}
+
+				lp.getGroupManager().saveGroup(gp);
+
+			}
+		}
 
 	}
 

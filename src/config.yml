@@ -6,6 +6,7 @@ MySQL_database: test
 MySQL_username: root
 MySQL_password: password
 MySQL_claimData: claim_data
+MySQL_userData: user_data
 
 #Other
 

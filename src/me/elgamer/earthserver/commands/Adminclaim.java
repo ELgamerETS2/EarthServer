@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.elgamer.earthserver.utils.ClaimAdmin;
+import me.elgamer.earthserver.utils.Permissions;
 
 public class Adminclaim implements CommandExecutor {
 
@@ -33,14 +34,18 @@ public class Adminclaim implements CommandExecutor {
 
 			if (args[0].equalsIgnoreCase("unclaim")) {
 				claim.unclaim(p,"0");
+				Permissions.updatePermissions();
 				return true;
 			}
 			else if (args[0].equalsIgnoreCase("public")) {
 				claim.setPublic(p,"0");
+				Permissions.updatePermissions();
 				return true;
 			}
 			else if (args[0].equalsIgnoreCase("private")) {
 				claim.setPrivate(p,"0");
+				Permissions.updatePermissions();
+				return true;
 			}
 			
 			else {return false;}
@@ -50,25 +55,33 @@ public class Adminclaim implements CommandExecutor {
 		if (args.length == 2) {
 			if (args[0].equalsIgnoreCase("transferowner")) {
 				claim.transferowner(p,args[1],"0");
+				Permissions.updatePermissions();
 				return true;
 			}
 			else if (args[0].equalsIgnoreCase("add")) {
 				claim.addMember(p,args[1],"0");
+				Permissions.updatePermissions();
+				return true;
 			}
 			else if (args[0].equalsIgnoreCase("remove")) {
 				claim.removeMember(p,args[1],"0");
+				Permissions.updatePermissions();
+				return true;
 			}
 			
 			else if (args[0].equalsIgnoreCase("unclaim")) {
 				claim.unclaim(p,args[1]);
+				Permissions.updatePermissions();
 				return true;
 			}
 			else if (args[0].equalsIgnoreCase("public")) {
 				claim.setPublic(p,args[1]);
+				Permissions.updatePermissions();
 				return true;
 			}
 			else if (args[0].equalsIgnoreCase("private")) {
 				claim.setPrivate(p,args[1]);
+				Permissions.updatePermissions();
 				return true;
 			}
 			
@@ -79,14 +92,17 @@ public class Adminclaim implements CommandExecutor {
 			
 			if (args[0].equalsIgnoreCase("transferowner")) {
 				claim.transferowner(p,args[1],args[2]);
+				Permissions.updatePermissions();
 				return true;
 			}
 			else if (args[0].equalsIgnoreCase("add")) {
 				claim.addMember(p,args[1],args[2]);
+				Permissions.updatePermissions();
 				return true;
 			}
 			else if (args[0].equalsIgnoreCase("remove")) {
 				claim.removeMember(p,args[1],args[2]);
+				Permissions.updatePermissions();
 				return true;
 			}
 			

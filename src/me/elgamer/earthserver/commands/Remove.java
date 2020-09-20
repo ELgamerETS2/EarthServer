@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.elgamer.earthserver.utils.ClaimRegion;
+import me.elgamer.earthserver.utils.Permissions;
 
 public class Remove implements CommandExecutor {
 
@@ -34,6 +35,7 @@ public class Remove implements CommandExecutor {
 		if (args.length == 1) { 
 
 			claim.removeMember(p, getRegion(p), args[0]);
+			Permissions.updatePermissions();
 			return true;
 			
 		}
@@ -61,6 +63,8 @@ public class Remove implements CommandExecutor {
 				claim.removeMember(p, points[i], args[0]);
 
 			}
+			
+			Permissions.updatePermissions();
 
 		} catch (NumberFormatException e) {
 			p.sendMessage(ChatColor.RED + "You must use an integer value between 0 and 2");

@@ -52,8 +52,7 @@ public class ClaimAdmin {
 
 					regions.removeRegion(points[i]);
 
-					Permissions perms = new Permissions();
-					perms.removePermission(UUID.fromString(mysql.getOwner(points[i])), points[i]);
+					mysql.removePermission(mysql.getOwner(points[i]), points[i]);
 
 					String members = mysql.removeRegion(points[i]);
 
@@ -64,7 +63,7 @@ public class ClaimAdmin {
 
 						for (int j = 0 ; j < regionMembers.length ; j++) {
 
-							perms.removePermission(UUID.fromString(regionMembers[j]), points[i]);
+							mysql.removePermission(regionMembers[j], points[i]);
 
 						}
 					}
@@ -128,8 +127,7 @@ public class ClaimAdmin {
 						claim.setMembers(members);
 						mysql.setPublic(points[i]);
 
-						Permissions perms = new Permissions();
-						perms.addGroupPermission("builder", points[i]);
+						mysql.addPermission("builder", points[i]);
 
 						p.sendMessage(ChatColor.GREEN + "Region " + points[i] + " is now open for all builders!");
 
@@ -194,8 +192,7 @@ public class ClaimAdmin {
 						claim.setMembers(members);
 						mysql.setPrivate(points[i]);
 
-						Permissions perms = new Permissions();
-						perms.removeGroupPermission("builder", points[i]);
+						mysql.removePermission("builder", points[i]);
 
 						p.sendMessage(ChatColor.RED + "Region " + points[i] + " is now private, only the region owner and members have access!");
 
@@ -281,9 +278,8 @@ public class ClaimAdmin {
 						claim.setOwners(owner);
 						mysql.transferowner(points[i], user.getUniqueId().toString());
 
-						Permissions perms = new Permissions();
-						perms.removePermission(pOld.getUniqueId(), points[i]);
-						perms.addPermission(user.getUniqueId(), points[i]);
+						mysql.removePermission(pOld.getUniqueId().toString(), points[i]);
+						mysql.addPermission(user.getUniqueId().toString(), points[i]);
 
 						p.sendMessage(ChatColor.RED + "Transferred region owner of " + points[i] + " from " + pOld.getName() + " to " + name + "!");
 
@@ -358,9 +354,7 @@ public class ClaimAdmin {
 						claim.setMembers(members);
 						mysql.addMember(points[i], user.getUniqueId().toString());
 
-						Permissions perms = new Permissions();
-
-						perms.addPermission(p.getUniqueId(), points[i]);
+						mysql.addPermission(p.getUniqueId().toString(), points[i]);
 
 						p.sendMessage(ChatColor.GREEN + name + "added to region " + points[i] + "!");
 
@@ -437,9 +431,7 @@ public class ClaimAdmin {
 						claim.setMembers(members);
 						mysql.removeMember(points[i], user.getUniqueId().toString());
 
-						Permissions perms = new Permissions();
-
-						perms.removePermission(p.getUniqueId(), points[i]);
+						mysql.removePermission(p.getUniqueId().toString(), points[i]);
 
 						p.sendMessage(ChatColor.GREEN + name + "remove from region " + points[i] + "!");
 

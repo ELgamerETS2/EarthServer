@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.elgamer.earthserver.utils.ClaimRegion;
+import me.elgamer.earthserver.utils.Permissions;
 
 public class Teamclaim implements CommandExecutor {
 
@@ -36,6 +37,7 @@ public class Teamclaim implements CommandExecutor {
 			if (claim.createRegion(p, getRegion(p))) {
 				claim.setPublic(p, getRegion(p));
 			}
+			Permissions.updatePermissions();
 			return true;
 
 		}
@@ -58,6 +60,8 @@ public class Teamclaim implements CommandExecutor {
 					claim.setPublic(p, points[i]);
 				}
 			}
+			
+			Permissions.updatePermissions();
 
 		} catch (NumberFormatException e) {
 			p.sendMessage(ChatColor.RED + "You must use an integer value between 0 and 2");

@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 
 import me.elgamer.earthserver.gui.ClaimGui;
 import me.elgamer.earthserver.utils.ClaimRegion;
+import me.elgamer.earthserver.utils.Permissions;
 import net.md_5.bungee.api.ChatColor;
 
 public class Claim implements CommandExecutor {
@@ -65,6 +66,8 @@ public class Claim implements CommandExecutor {
 			for (int i = 0; i < points.length; i++) {
 				claim.createRegion(p, points[i]);
 			}
+			
+			Permissions.updatePermissions();
 
 		} catch (NumberFormatException e) {
 			p.sendMessage(ChatColor.RED + "You must use an integer value between 0 and 2");

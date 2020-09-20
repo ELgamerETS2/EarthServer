@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.elgamer.earthserver.utils.ClaimRegion;
+import me.elgamer.earthserver.utils.Permissions;
 
 public class Private implements CommandExecutor {
 
@@ -33,6 +34,7 @@ public class Private implements CommandExecutor {
 		if (args.length == 0) { 
 
 			claim.setPrivate(p, getRegion(p));
+			Permissions.updatePermissions();
 			return true;
 
 		}
@@ -53,6 +55,8 @@ public class Private implements CommandExecutor {
 			for (int i = 0; i < points.length; i++) {
 				claim.setPrivate(p, points[i]);
 			}
+			
+			Permissions.updatePermissions();
 
 		} catch (NumberFormatException e) {
 			p.sendMessage(ChatColor.RED + "You must use an integer value between 0 and 2");
