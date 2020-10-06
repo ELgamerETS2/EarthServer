@@ -43,6 +43,10 @@ public class ClaimRegion {
 
 		//Check if the region already exists
 		if (mysql.checkDuplicate(region)) {
+			if (mysql.getOwner(region).equals(p.getUniqueId().toString())) {
+				p.sendMessage(ChatColor.RED + "You already own the region " + region + "!");
+				return false;
+			}
 			if (Bukkit.getPlayer(mysql.getOwner(region)) != null) {
 				String regionOwner = Bukkit.getPlayer(UUID.fromString(mysql.getOwner(region))).getName();
 				p.sendMessage(ChatColor.RED + ("The region " + region + " is already claimed by " + regionOwner + "!"));
@@ -496,41 +500,48 @@ public class ClaimRegion {
 
 				if (user == null) {
 					user = Bukkit.getOfflinePlayer(name).getPlayer();
-					if (user == null) {
-						p.sendMessage("The user " + name + " does not exist on this server!");
+				}
+
+				if (user != null) {
+
+					if (user.getUniqueId().toString().equals(p.getUniqueId().toString())) {
+						p.sendMessage(ChatColor.RED + "You already own this region!");
+					} else {
+
+						World world = Bukkit.getWorld(config.getString("World_Name"));
+
+						RegionContainer container = wg.getRegionContainer();
+						RegionManager regions = container.get(world);
+
+						ProtectedRegion claim = regions.getRegion(region);
+						DefaultDomain members = claim.getMembers();
+
+						Set<String> set = members.getPlayers();
+
+						if (!(set.contains(user.getUniqueId().toString()))) {
+
+							members.addPlayer(user.getUniqueId().toString());
+
+							claim.setMembers(members);
+							mysql.addMember(region, user.getUniqueId().toString());
+
+							mysql.addPermission(p.getUniqueId().toString(), region);
+
+							p.sendMessage(ChatColor.GREEN + name + " added to region " + region + "!");
+
+							try {
+								regions.save();
+							} catch (StorageException e1) {
+								e1.printStackTrace();
+							}
+
+						} else {
+							p.sendMessage(ChatColor.RED + name + " is already a member of this region!");
+						}
 					}
 
 				} else {
-
-					World world = Bukkit.getWorld(config.getString("World_Name"));
-
-					RegionContainer container = wg.getRegionContainer();
-					RegionManager regions = container.get(world);
-
-					ProtectedRegion claim = regions.getRegion(region);
-					DefaultDomain members = claim.getMembers();
-
-					Set<String> set = members.getPlayers();
-
-					if (!(set.contains(name))) {
-
-						members.addPlayer(name);
-
-						claim.setMembers(members);
-						mysql.addMember(region, user.getUniqueId().toString());
-
-						mysql.addPermission(p.getUniqueId().toString(), region);
-
-						p.sendMessage(ChatColor.GREEN + name + "added to region " + region + "!");
-
-						try {
-							regions.save();
-						} catch (StorageException e1) {
-							e1.printStackTrace();
-						}
-					} else {
-						p.sendMessage(ChatColor.RED + name + " is already a member of the region " + region + "!");
-					}
+					p.sendMessage(ChatColor.RED + name + " does not exist!");
 				}
 
 			} else {
@@ -562,11 +573,9 @@ public class ClaimRegion {
 
 				if (user == null) {
 					user = Bukkit.getOfflinePlayer(name).getPlayer();
-					if (user == null) {
-						p.sendMessage("The user " + name + " does not exist on this server!");
-					}
+				}
 
-				} else {
+				if (user != null) {
 
 					World world = Bukkit.getWorld(config.getString("World_Name"));
 
@@ -578,16 +587,16 @@ public class ClaimRegion {
 
 					Set<String> set = members.getPlayers();
 
-					if (!(set.contains(name))) {
+					if (!(set.contains(user.getUniqueId().toString()))) {
 
-						members.removePlayer(name);
+						members.removePlayer(user.getUniqueId().toString());
 
 						claim.setMembers(members);
 						mysql.removeMember(region, user.getUniqueId().toString());
 
 						mysql.removePermission(p.getUniqueId().toString(), region);
 
-						p.sendMessage(ChatColor.RED + name + "removed from region " + region + "!");
+						p.sendMessage(ChatColor.RED + name + " removed from region " + region + "!");
 
 						try {
 							regions.save();
@@ -597,6 +606,9 @@ public class ClaimRegion {
 					} else {
 						p.sendMessage(ChatColor.RED + name + " is not a member of this region!");
 					}
+
+				} else {
+					p.sendMessage(ChatColor.RED + name + " does not exist!");
 				}
 
 			} else {
@@ -631,12 +643,42 @@ public class ClaimRegion {
 		MySQL mysql = new MySQL();
 		if (mysql.regionExists(region)) {
 
+			String regionOwner;
+			
 			if (Bukkit.getPlayer(mysql.getOwner(region)) != null) {
-				String regionOwner = Bukkit.getPlayer(UUID.fromString(mysql.getOwner(region))).getName();
-				p.sendMessage(ChatColor.GREEN + ("The region " + region + " is claimed by " + regionOwner + "!"));
+				regionOwner = Bukkit.getPlayer(UUID.fromString(mysql.getOwner(region))).getName();
 			} else {
-				String regionOwner = Bukkit.getOfflinePlayer(UUID.fromString(mysql.getOwner(region))).getName();
-				p.sendMessage(ChatColor.GREEN + ("The region " + region + " is claimed by " + regionOwner + "!"));
+				regionOwner = Bukkit.getOfflinePlayer(UUID.fromString(mysql.getOwner(region))).getName();
+			}
+			
+			String[] members = mysql.getMembers(region);
+			Boolean isPublic = mysql.isPublic(region);
+			String names = null;
+			String regionMember;
+			
+			if (members != null) {
+				for (String m : members) {
+					if (Bukkit.getPlayer(mysql.getOwner(region)) != null) {
+						regionMember = Bukkit.getPlayer(UUID.fromString(mysql.getOwner(region))).getName();
+					} else {
+						regionMember = Bukkit.getOfflinePlayer(UUID.fromString(mysql.getOwner(region))).getName();
+					}
+					if (names == null) {
+						names = regionMember;
+					} else {
+						names = names + ", " + regionMember;
+					}
+				}
+			}
+			
+			if (isPublic == true) {
+				p.sendMessage(ChatColor.GREEN + "The region " + region + " is claimed by " + regionOwner + " and is public");
+			}
+			
+			if (names == null) {
+				p.sendMessage(ChatColor.GREEN + "The region " + region + " is claimed by " + regionOwner + " and is private");
+			} else {
+				p.sendMessage(ChatColor.GREEN + "The region " + region + " is claimed by " + regionOwner + " and has members " + names);
 			}
 
 		} else {

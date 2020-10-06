@@ -312,5 +312,43 @@ public class MySQL {
 		}
 		return null;
 	}
+	
+	public String[] getMembers(String region) {
+
+		try {
+			PreparedStatement statement = instance.getConnection().prepareStatement
+					("SELECT * FROM " + instance.claimData + " WHERE REGION_ID=?");
+			statement.setString(1, region);
+			ResultSet results = statement.executeQuery();
+			results.next();
+			
+			if (results.getString("MEMBERS") == null) {
+				return null;
+			} else {
+				return (results.getString("MEMBERS").split(","));
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public boolean isPublic(String region) {
+
+		try {
+			PreparedStatement statement = instance.getConnection().prepareStatement
+					("SELECT * FROM " + instance.claimData + " WHERE REGION_ID=?");
+			statement.setString(1, region);
+			ResultSet results = statement.executeQuery();
+			results.next();
+
+			return (results.getBoolean("IS_PUBLIC"));
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 
 }
