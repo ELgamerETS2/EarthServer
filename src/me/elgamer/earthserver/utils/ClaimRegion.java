@@ -66,7 +66,7 @@ public class ClaimRegion {
 
 		//Create the region
 		World world = Bukkit.getWorld(config.getString("World_Name"));
-		
+
 		RegionContainer container = wg.getRegionContainer();
 		RegionManager regions = container.get(world);
 
@@ -79,11 +79,11 @@ public class ClaimRegion {
 		claim.setOwners(owners);
 
 		regions.addRegion(claim);
-		
+
 		mysql.createRegion(p.getUniqueId().toString(), region);
-		
+
 		mysql.addPermission(p.getUniqueId().toString(), region);
-		
+
 		p.sendMessage(ChatColor.GREEN + "Region " + region + " created!");
 
 		//Save the new region
@@ -108,7 +108,7 @@ public class ClaimRegion {
 
 			if (p.getUniqueId().toString().equals(mysql.getOwner(region))) {
 				World world = Bukkit.getWorld(config.getString("World_Name"));
-				
+
 				RegionContainer container = wg.getRegionContainer();
 				RegionManager regions = container.get(world);
 
@@ -122,9 +122,9 @@ public class ClaimRegion {
 
 					claim.setMembers(members);
 					mysql.setPublic(region);
-					
+
 					mysql.addPermission("builder", region);
-					
+
 					p.sendMessage(ChatColor.GREEN + "Region " + region + " is now open for all builders!");
 
 					try {
@@ -161,7 +161,7 @@ public class ClaimRegion {
 			if (p.getUniqueId().toString().equals(mysql.getOwner(region))) {
 
 				World world = Bukkit.getWorld(config.getString("World_Name"));
-				
+
 				RegionContainer container = wg.getRegionContainer();
 				RegionManager regions = container.get(world);
 
@@ -177,9 +177,9 @@ public class ClaimRegion {
 					mysql.setPrivate(region);
 
 					mysql.removePermission("builder", region);
-					
+
 					p.sendMessage(ChatColor.RED + "Region " + region + " is now private, only the region owner and members have access!");
-					
+
 					try {
 						regions.save();
 					} catch (StorageException e1) {
@@ -235,46 +235,54 @@ public class ClaimRegion {
 
 								if (user == null) {
 									user = Bukkit.getOfflinePlayer(name).getPlayer();
-									if (user == null) {
-										p.sendMessage("The user " + name + " does not exist on this server!");
+								}
+
+								if (user != null) {
+
+									if (user.getUniqueId().toString().equals(p.getUniqueId().toString())) {
+										p.sendMessage(ChatColor.RED + "You already own this region!");
+									} else {
+
+										World world = Bukkit.getWorld(config.getString("World_Name"));
+
+										RegionContainer container = wg.getRegionContainer();
+										RegionManager regions = container.get(world);
+
+										ProtectedRegion claim = regions.getRegion(region);
+										DefaultDomain members = claim.getMembers();
+
+										Set<String> set = members.getPlayers();
+
+										if (!(set.contains(user.getUniqueId().toString()))) {
+
+											members.addPlayer(user.getUniqueId().toString());
+
+											claim.setMembers(members);
+											mysql.addMember(region, user.getUniqueId().toString());
+
+											mysql.addPermission(p.getUniqueId().toString(), region);
+
+											p.sendMessage(ChatColor.GREEN + name + " added to region " + region + "!");
+
+											try {
+												regions.save();
+											} catch (StorageException e1) {
+												e1.printStackTrace();
+											}
+
+										} else {
+											p.sendMessage(ChatColor.RED + name + " is already a member of this region!");
+										}
 									}
 
 								} else {
-
-									World world = Bukkit.getWorld(config.getString("World_Name"));
-									
-									RegionContainer container = wg.getRegionContainer();
-									RegionManager regions = container.get(world);
-
-									ProtectedRegion claim = regions.getRegion(region);
-									DefaultDomain members = claim.getMembers();
-
-									Set<String> set = members.getPlayers();
-
-									if (!(set.contains(name))) {
-
-										members.addPlayer(name);
-
-										claim.setMembers(members);
-										mysql.addMember(region, user.getUniqueId().toString());
-
-										mysql.addPermission(p.getUniqueId().toString(), region);
-										
-										p.sendMessage(ChatColor.GREEN + name + "added to region " + region + "!");
-
-										try {
-											regions.save();
-										} catch (StorageException e1) {
-											e1.printStackTrace();
-										}
-									} else {
-										p.sendMessage(ChatColor.RED + name + " is already a member of this region!");
-									}
+									p.sendMessage(ChatColor.RED + name + " does not exist!");
 								}
 
 							} else {
 								p.sendMessage(ChatColor.RED + name + " is not a valid username!");
 							}
+
 						} else {
 							e.setWillClose(false);
 							e.setWillDestroy(false);
@@ -338,14 +346,12 @@ public class ClaimRegion {
 
 								if (user == null) {
 									user = Bukkit.getOfflinePlayer(name).getPlayer();
-									if (user == null) {
-										p.sendMessage("The user " + name + " does not exist on this server!");
-									}
+								}
 
-								} else {
+								if (user != null) {
 
 									World world = Bukkit.getWorld(config.getString("World_Name"));
-									
+
 									RegionContainer container = wg.getRegionContainer();
 									RegionManager regions = container.get(world);
 
@@ -354,17 +360,17 @@ public class ClaimRegion {
 
 									Set<String> set = members.getPlayers();
 
-									if (!(set.contains(name))) {
+									if (!(set.contains(user.getUniqueId().toString()))) {
 
-										members.removePlayer(name);
+										members.removePlayer(user.getUniqueId().toString());
 
 										claim.setMembers(members);
 										mysql.removeMember(region, user.getUniqueId().toString());
 
 										mysql.removePermission(p.getUniqueId().toString(), region);
-										
-										p.sendMessage(ChatColor.RED + name + "removed from region " + region + "!");
-										
+
+										p.sendMessage(ChatColor.RED + name + " removed from region " + region + "!");
+
 										try {
 											regions.save();
 										} catch (StorageException e1) {
@@ -373,11 +379,15 @@ public class ClaimRegion {
 									} else {
 										p.sendMessage(ChatColor.RED + name + " is not a member of this region!");
 									}
+
+								} else {
+									p.sendMessage(ChatColor.RED + name + " does not exist!");
 								}
 
 							} else {
 								p.sendMessage(ChatColor.RED + name + " is not a valid username!");
 							}
+
 						} else {
 							e.setWillClose(false);
 							e.setWillDestroy(false);
@@ -405,9 +415,9 @@ public class ClaimRegion {
 
 		return false;
 	}
-	
+
 	public boolean removeRegion(Player p, String region) {
-		
+
 		Main instance = Main.getInstance();
 		FileConfiguration config = instance.getConfig();
 
@@ -419,34 +429,34 @@ public class ClaimRegion {
 			if (p.getUniqueId().toString().equals(mysql.getOwner(region))) {
 
 				World world = Bukkit.getWorld(config.getString("World_Name"));
-				
+
 				RegionContainer container = wg.getRegionContainer();
 				RegionManager regions = container.get(world);
 
 				regions.removeRegion(region);
-				
+
 				mysql.removePermission(p.getUniqueId().toString(), region);
-				
+
 				String members = mysql.removeRegion(region);
-				
+
 				p.sendMessage(ChatColor.RED + "Region " + region + " removed!");
-				
+
 				if (members != null) {
 					String[] regionMembers = members.split(",");
-					
+
 					for (int i = 0 ; i < regionMembers.length ; i++) {
-						
+
 						mysql.removePermission(regionMembers[i], region);
-						
+
 					}
 				}
-				
+
 				try {
 					regions.save();
 				} catch (StorageException e1) {
 					e1.printStackTrace();
 				}
-				
+
 			} else {
 				p.sendMessage(ChatColor.RED + "You do not own the region " + region +"!");
 			}
@@ -455,7 +465,7 @@ public class ClaimRegion {
 			p.sendMessage(ChatColor.RED + "The region " + region + " does not exists!");
 			return false;
 		}
-				
+
 		return true;
 	}
 
@@ -468,7 +478,7 @@ public class ClaimRegion {
 
 		return (WorldGuardPlugin) plugin;
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	public boolean addMember(Player p, String region, String name) {
 
@@ -481,7 +491,7 @@ public class ClaimRegion {
 		if (mysql.regionExists(region)) {
 
 			if (p.getUniqueId().toString().equals(mysql.getOwner(region))) {
-				
+
 				Player user = Bukkit.getPlayer(name);
 
 				if (user == null) {
@@ -493,7 +503,7 @@ public class ClaimRegion {
 				} else {
 
 					World world = Bukkit.getWorld(config.getString("World_Name"));
-					
+
 					RegionContainer container = wg.getRegionContainer();
 					RegionManager regions = container.get(world);
 
@@ -508,9 +518,9 @@ public class ClaimRegion {
 
 						claim.setMembers(members);
 						mysql.addMember(region, user.getUniqueId().toString());
-						
+
 						mysql.addPermission(p.getUniqueId().toString(), region);
-						
+
 						p.sendMessage(ChatColor.GREEN + name + "added to region " + region + "!");
 
 						try {
@@ -547,7 +557,7 @@ public class ClaimRegion {
 		if (mysql.regionExists(region)) {
 
 			if (p.getUniqueId().toString().equals(mysql.getOwner(region))) {
-				
+
 				Player user = Bukkit.getPlayer(name);
 
 				if (user == null) {
@@ -559,7 +569,7 @@ public class ClaimRegion {
 				} else {
 
 					World world = Bukkit.getWorld(config.getString("World_Name"));
-					
+
 					RegionContainer container = wg.getRegionContainer();
 					RegionManager regions = container.get(world);
 
@@ -576,9 +586,9 @@ public class ClaimRegion {
 						mysql.removeMember(region, user.getUniqueId().toString());
 
 						mysql.removePermission(p.getUniqueId().toString(), region);
-						
+
 						p.sendMessage(ChatColor.RED + name + "removed from region " + region + "!");
-						
+
 						try {
 							regions.save();
 						} catch (StorageException e1) {
@@ -600,9 +610,9 @@ public class ClaimRegion {
 
 		return false;
 	}
-	
+
 	public void help(Player p) {
-		
+
 		p.closeInventory();
 		p.sendMessage(Utils.chat("&7To open the claim gui do &a/claim &7or use the commands below!"));
 		p.sendMessage(Utils.chat("&a/claim info &7returns the region name and owner!"));
@@ -613,14 +623,14 @@ public class ClaimRegion {
 		p.sendMessage(Utils.chat("&a/remove <user> [radius] &7removes the specified user to all 512x512 regions in a square radius of regions!"));
 		p.sendMessage(Utils.chat("&a/public [radius] &7makes all 512x512 regions public to builders in a square radius of regions!"));
 		p.sendMessage(Utils.chat("&a/private [radius] &7makes all 512x512 regions private in a square radius of regions!"));
-		
+
 	}
-	
+
 	public void info(Player p, String region) {
-		
+
 		MySQL mysql = new MySQL();
 		if (mysql.regionExists(region)) {
-			
+
 			if (Bukkit.getPlayer(mysql.getOwner(region)) != null) {
 				String regionOwner = Bukkit.getPlayer(UUID.fromString(mysql.getOwner(region))).getName();
 				p.sendMessage(ChatColor.GREEN + ("The region " + region + " is claimed by " + regionOwner + "!"));
@@ -628,13 +638,13 @@ public class ClaimRegion {
 				String regionOwner = Bukkit.getOfflinePlayer(UUID.fromString(mysql.getOwner(region))).getName();
 				p.sendMessage(ChatColor.GREEN + ("The region " + region + " is claimed by " + regionOwner + "!"));
 			}
-			
+
 		} else {
-			
+
 			p.sendMessage(ChatColor.GREEN + "The region " + region + " is unclaimed!");
-			
+
 		}
-		
+
 	}
 
 }

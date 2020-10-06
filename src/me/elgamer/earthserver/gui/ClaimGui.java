@@ -7,6 +7,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import me.elgamer.earthserver.utils.ClaimRegion;
+import me.elgamer.earthserver.utils.Permissions;
 import me.elgamer.earthserver.utils.Utils;
 
 public class ClaimGui {
@@ -50,20 +51,27 @@ public class ClaimGui {
 		} else if (!(inv.getName().equalsIgnoreCase("Claim"))) {					
 	    } else if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(Utils.chat("&cClaim"))) {
 			claim.createRegion(p, getRegion(p));
+			Permissions.updatePermissions();
 		} else if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(Utils.chat("&cTeam Claim"))) {
 			if (claim.createRegion(p, getRegion(p))) {
 				claim.setPublic(p, getRegion(p));
 			}
+			Permissions.updatePermissions();
 		} else if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(Utils.chat("&cPublic"))) {
 			claim.setPublic(p, getRegion(p));
+			Permissions.updatePermissions();
 		} else if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(Utils.chat("&cPrivate"))) {
 			claim.setPrivate(p, getRegion(p));
+			Permissions.updatePermissions();
 		} else if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(Utils.chat("&cAdd"))) {
 			claim.addMember(p, getRegion(p));
+			Permissions.updatePermissions();
 		} else if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(Utils.chat("&cRemove"))) {
 			claim.removeMember(p, getRegion(p));
+			Permissions.updatePermissions();
 		} else if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(Utils.chat("&cUnclaim"))) {
 			claim.removeRegion(p, getRegion(p));
+			Permissions.updatePermissions();
 		} else if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(Utils.chat("&cHelp"))) {
 			claim.help(p);
 		}

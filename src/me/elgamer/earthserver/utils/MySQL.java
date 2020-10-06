@@ -116,7 +116,12 @@ public class MySQL {
 			results.next();
 
 			String names = results.getString("MEMBERS");
-			names = names + "," + uuid;
+			
+			if (names == null) {
+				names = uuid;
+			} else {
+				names = names + "," + uuid;
+			}
 
 			statement = instance.getConnection().prepareStatement
 					("UPDATE " + instance.claimData + " SET MEMBERS=? WHERE REGION_ID=?");
