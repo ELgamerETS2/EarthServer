@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -26,7 +27,6 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import me.elgamer.earthserver.Main;
 import me.elgamer.earthserver.gui.AnvilGui;
 import me.elgamer.earthserver.gui.AnvilGui.AnvilClickEvent;
-import net.md_5.bungee.api.ChatColor;
 
 public class ClaimRegion {
 
