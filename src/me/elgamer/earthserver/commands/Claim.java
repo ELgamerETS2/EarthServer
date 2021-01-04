@@ -1,15 +1,20 @@
 package me.elgamer.earthserver.commands;
 
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import me.elgamer.earthserver.Main;
 import me.elgamer.earthserver.gui.ClaimGui;
 import me.elgamer.earthserver.utils.ClaimRegion;
+import me.elgamer.earthserver.utils.MySQL;
 import me.elgamer.earthserver.utils.Permissions;
-import net.md_5.bungee.api.ChatColor;
 
 public class Claim implements CommandExecutor {
 
@@ -21,17 +26,43 @@ public class Claim implements CommandExecutor {
 			sender.sendMessage("&cYou cannot claim a region!");
 			return true;
 		}
+		
+		ClaimRegion claim = new ClaimRegion();
 
 		//Convert sender to player
 		Player p = (Player) sender;
 
+		if (Main.getPermissions().getPrimaryGroup(p) == "default") {
+			
+			MySQL mysql = new MySQL();
+			String region = getRegion(p);
+			
+			if (mysql.hasRegion(p.getUniqueId().toString())) {
+				p.sendMessage(ChatColor.RED + "Guests may only own 1 region at once, you can apply for builder once you have built at least 2 buildings in your active region!");
+				return true;
+			}
+			
+			if (mysql.checkDuplicate(region)) {
+				if (Bukkit.getPlayer(mysql.getOwner(region)) != null) {
+					String regionOwner = Bukkit.getPlayer(UUID.fromString(mysql.getOwner(region))).getName();
+					p.sendMessage(ChatColor.RED + ("The region " + region + " is already claimed by " + regionOwner + "!"));
+					p.sendMessage(ChatColor.RED + ("If you believe this is wrongly claimed please contact staff!"));
+				} else {
+					String regionOwner = Bukkit.getOfflinePlayer(UUID.fromString(mysql.getOwner(region))).getName();
+					p.sendMessage(ChatColor.RED + ("The region " + region + " is already claimed by " + regionOwner + "!"));
+					p.sendMessage(ChatColor.RED + ("If you believe this is wrongly claimed please contact staff!"));
+				}
+				return true;
+			}
+			
+			
+		}
+		
 		//Check if player has permission
 		if (!(p.hasPermission("earthserver.claim"))) {
 			p.sendMessage(ChatColor.RED + "You do not have permission for this command!");
 			return true;
 		}
-		
-		ClaimRegion claim = new ClaimRegion();
 
 		//If command is run without args then open the claim gui
 		if (args.length == 0) {

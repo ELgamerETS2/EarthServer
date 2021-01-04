@@ -12,15 +12,19 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.elgamer.earthserver.commands.Add;
+import me.elgamer.earthserver.commands.AddToDatabase;
 import me.elgamer.earthserver.commands.Adminclaim;
 import me.elgamer.earthserver.commands.Claim;
 import me.elgamer.earthserver.commands.Private;
 import me.elgamer.earthserver.commands.Public;
 import me.elgamer.earthserver.commands.Remove;
+import me.elgamer.earthserver.commands.TPBlock;
 import me.elgamer.earthserver.commands.Teamclaim;
 import me.elgamer.earthserver.commands.Unclaim;
 import me.elgamer.earthserver.gui.ClaimGui;
 import me.elgamer.earthserver.listeners.InventoryClicked;
+import me.elgamer.earthserver.listeners.JoinEvent;
+import me.elgamer.earthserver.listeners.LeaveEvent;
 import net.luckperms.api.LuckPerms;
 import net.milkbowl.vault.permission.Permission;
 
@@ -28,7 +32,7 @@ public class Main extends JavaPlugin {
 
 	//MySQL
 	private Connection connection;
-	public String host, database, username, password, claimData, userData;
+	public String host, database, username, password, claimData, permissionData;
 	public int port;
 
 	//Other
@@ -56,16 +60,20 @@ public class Main extends JavaPlugin {
 
 		//Listeners
 		new InventoryClicked(this);
+		new JoinEvent(this);
+		new LeaveEvent(this);
 
 		//Commands
 		getCommand("claim").setExecutor(new Claim());
 		getCommand("unclaim").setExecutor(new Unclaim());
 		getCommand("teamclaim").setExecutor(new Teamclaim());
-		getCommand("add").setExecutor(new Add());
-		getCommand("remove").setExecutor(new Remove());
+		getCommand("addmember").setExecutor(new Add());
+		getCommand("removemember").setExecutor(new Remove());
 		getCommand("public").setExecutor(new Public());
 		getCommand("private").setExecutor(new Private());
 		getCommand("adminclaim").setExecutor(new Adminclaim());
+		getCommand("addtodatabase").setExecutor(new AddToDatabase());
+		getCommand("tpblock").setExecutor(new TPBlock());
 
 		//GUI
 		ClaimGui.initialize();
@@ -97,12 +105,12 @@ public class Main extends JavaPlugin {
 		username = config.getString("MySQL_username");
 		password = config.getString("MySQL_password");
 		claimData = config.getString("MySQL_claimData");
-		userData = config.getString("MySQL_userData");
+		permissionData = config.getString("MySQL_permissionData");
 
 		try {
 
 			synchronized (this) {
-				if (getConnection() != null && !getConnection().isClosed()) {
+				if (connection != null && !connection.isClosed()) {
 					return;
 				}
 
@@ -122,6 +130,15 @@ public class Main extends JavaPlugin {
 	}
 
 	public Connection getConnection() {
+
+		try {
+			if (connection == null || connection.isClosed()) {
+				mysqlSetup();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
 		return connection;
 	}
 
@@ -157,7 +174,7 @@ public class Main extends JavaPlugin {
 		try {
 			PreparedStatement statement = instance.getConnection().prepareStatement
 					("CREATE TABLE IF NOT EXISTS " + claimData
-							+ " ( REGION_ID TEXT NOT NULL , REGION_OWNER TEXT NOT NULL , MEMBERS TEXT NULL DEFAULT NULL , IS_PUBLIC TEXT NOT NULL DEFAULT 'false' , UNIQUE (REGION_ID))");
+							+ " ( REGION_ID VARCHAR(36) NOT NULL , REGION_OWNER TEXT NOT NULL , MEMBERS TEXT NULL DEFAULT NULL , IS_PUBLIC TEXT NOT NULL , LAST_ONLINE TEXT NOT NULL , UNIQUE (REGION_ID))");
 			statement.executeUpdate();
 
 		} catch (SQLException e) {
@@ -168,8 +185,8 @@ public class Main extends JavaPlugin {
 	public void createUserTable() {
 		try {
 			PreparedStatement statement = instance.getConnection().prepareStatement
-					("CREATE TABLE IF NOT EXISTS " + userData
-							+ " ( UUID TEXT NOT NULL , ADD_PERM TEXT NULL DEFAULT NULL , REMOVE_PERM TEXT NULL DEFAULT NULL , UNIQUE (UUID))");
+					("CREATE TABLE IF NOT EXISTS " + permissionData
+							+ " ( UUID VARCHAR(36) NOT NULL , ADD_PERM TEXT NULL DEFAULT NULL , REMOVE_PERM TEXT NULL DEFAULT NULL , UNIQUE (UUID))");
 			statement.executeUpdate();
 
 		} catch (SQLException e) {

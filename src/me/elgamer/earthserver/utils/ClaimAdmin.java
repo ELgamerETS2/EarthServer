@@ -226,14 +226,15 @@ public class ClaimAdmin {
 		Main instance = Main.getInstance();
 		FileConfiguration config = instance.getConfig();
 
-		Player user = Bukkit.getPlayer(name);
+		String uuid;
 
-		if (user == null) {
-			user = Bukkit.getOfflinePlayer(name).getPlayer();
-			if (user == null) {
-				p.sendMessage("The user " + name + " does not exist on this server!");
-				return true;
-			}
+		if (Bukkit.getPlayer(name) != null) {
+			uuid = Bukkit.getPlayer(name).getUniqueId().toString();
+		} else if (Bukkit.getOfflinePlayer(name) != null && Bukkit.getOfflinePlayer(name).hasPlayedBefore()){
+			uuid = Bukkit.getOfflinePlayer(name).getUniqueId().toString();
+		} else {
+			p.sendMessage("The user " + name + " has never connected to this server!");
+			return true;
 		}
 
 		try {
@@ -260,28 +261,22 @@ public class ClaimAdmin {
 					ProtectedRegion claim = regions.getRegion(points[i]);
 					DefaultDomain owner = claim.getOwners();
 
-					Player pOld;
+					String pOld = mysql.getOwner(points[i]);
 
-					if (Bukkit.getPlayer(mysql.getOwner(points[i])) != null) {
-						pOld = Bukkit.getPlayer(UUID.fromString(mysql.getOwner(points[i])));
-					} else {
-						pOld = Bukkit.getOfflinePlayer(UUID.fromString(mysql.getOwner(points[i]))).getPlayer();
-					}
-
-					if (user.getUniqueId().toString().equals(pOld.getUniqueId().toString())) {
+					if (uuid.equals(pOld)) {
 						p.sendMessage(ChatColor.RED + name + " is already the owner of region " + points[i]);
 					} else {
 
 						owner.removeAll();
-						owner.addPlayer(user.getUniqueId());
+						owner.addPlayer(UUID.fromString(uuid));
 
 						claim.setOwners(owner);
-						mysql.transferowner(points[i], user.getUniqueId().toString());
+						mysql.transferowner(uuid, points[i]);
 
-						mysql.removePermission(pOld.getUniqueId().toString(), points[i]);
-						mysql.addPermission(user.getUniqueId().toString(), points[i]);
+						mysql.removePermission(pOld, points[i]);
+						mysql.addPermission(uuid, points[i]);
 
-						p.sendMessage(ChatColor.RED + "Transferred region owner of " + points[i] + " from " + pOld.getName() + " to " + name + "!");
+						p.sendMessage(ChatColor.GREEN + "Transferred region owner of " + points[i] + " from " + Bukkit.getOfflinePlayer(UUID.fromString(pOld)).getName() + " to " + name + "!");
 
 						try {
 							regions.save();
@@ -311,14 +306,15 @@ public class ClaimAdmin {
 		Main instance = Main.getInstance();
 		FileConfiguration config = instance.getConfig();
 
-		Player user = Bukkit.getPlayer(name);
-
-		if (user == null) {
-			user = Bukkit.getOfflinePlayer(name).getPlayer();
-			if (user == null) {
-				p.sendMessage("The user " + name + " does not exist on this server!");
-				return true;
-			}
+		String uuid;
+		
+		if (Bukkit.getPlayer(name) != null) {
+			uuid = Bukkit.getPlayer(name).getUniqueId().toString();
+		} else if (Bukkit.getOfflinePlayer(name) != null && Bukkit.getOfflinePlayer(name).hasPlayedBefore()){
+			uuid = Bukkit.getOfflinePlayer(name).getUniqueId().toString();
+		} else {
+			p.sendMessage("The user " + name + " has never connected to this server!");
+			return true;
 		}
 
 		try {
@@ -345,16 +341,16 @@ public class ClaimAdmin {
 					ProtectedRegion claim = regions.getRegion(points[i]);
 					DefaultDomain members = claim.getMembers();
 
-					Set<String> set = members.getPlayers();
+					Set<UUID> set = members.getUniqueIds();
 
-					if (!(set.contains(name))) {
+					if (!(set.contains(UUID.fromString(uuid)))) {
 
-						members.addPlayer(name);
+						members.addPlayer(UUID.fromString(uuid));
 
 						claim.setMembers(members);
-						mysql.addMember(points[i], user.getUniqueId().toString());
+						mysql.addMember(points[i], uuid);
 
-						mysql.addPermission(p.getUniqueId().toString(), points[i]);
+						mysql.addPermission(uuid, points[i]);
 
 						p.sendMessage(ChatColor.GREEN + name + "added to region " + points[i] + "!");
 
@@ -388,14 +384,15 @@ public class ClaimAdmin {
 		Main instance = Main.getInstance();
 		FileConfiguration config = instance.getConfig();
 
-		Player user = Bukkit.getPlayer(name);
+		String uuid;
 
-		if (user == null) {
-			user = Bukkit.getOfflinePlayer(name).getPlayer();
-			if (user == null) {
-				p.sendMessage("The user " + name + " does not exist on this server!");
-				return true;
-			}
+		if (Bukkit.getPlayer(name) != null) {
+			uuid = Bukkit.getPlayer(name).getUniqueId().toString();
+		} else if (Bukkit.getOfflinePlayer(name) != null && Bukkit.getOfflinePlayer(name).hasPlayedBefore()){
+			uuid = Bukkit.getOfflinePlayer(name).getUniqueId().toString();
+		} else {
+			p.sendMessage("The user " + name + " has never connected to this server!");
+			return true;
 		}
 
 		try {
@@ -422,16 +419,16 @@ public class ClaimAdmin {
 					ProtectedRegion claim = regions.getRegion(points[i]);
 					DefaultDomain members = claim.getMembers();
 
-					Set<String> set = members.getPlayers();
+					Set<UUID> set = members.getUniqueIds();
 
-					if (!(set.contains(name))) {
+					if (set.contains(UUID.fromString(uuid))) {
 
-						members.removePlayer(name);
+						members.removePlayer(UUID.fromString(uuid));
 
 						claim.setMembers(members);
-						mysql.removeMember(points[i], user.getUniqueId().toString());
+						mysql.removeMember(points[i], uuid);
 
-						mysql.removePermission(p.getUniqueId().toString(), points[i]);
+						mysql.removePermission(uuid, points[i]);
 
 						p.sendMessage(ChatColor.GREEN + name + "remove from region " + points[i] + "!");
 

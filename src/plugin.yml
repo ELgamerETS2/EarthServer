@@ -14,10 +14,10 @@ commands:
     teamclaim:
         usage: /<command> [radius]
         description: Teamclaims regions in a radius around the player, radius null = only regions player is in.
-    add:
+    addmember:
         usage: /<command> <user> [radius]
         description: Adds a certain player to regions in a radius around the player, radius null = only regions player is in.
-    remove:
+    removemember:
         usage: /<command> <user> [radius]
         description: Removes a certain player to regions in a radius around the player, radius null = only regions player is in.       
     public:
@@ -29,3 +29,9 @@ commands:
     adminclaim:
         usage: /adminclaim help
         description: Admin commands for regions, allows unclaiming, transferring ownership, adding/removing members and changing regions to public/private. 
+    addtodatabase:
+        usage: /addtodatabase [region] [owner-uuid] [public] <members-uuid (comma-separated)>
+        description: An admin function to import all data from existing claims stored in the worldguard regions file.
+    tpblock:
+        usage: /tpblock <x> <y> <z>
+        description: Simple command to place teleport command blocks.

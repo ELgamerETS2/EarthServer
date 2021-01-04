@@ -13,6 +13,7 @@ import me.elgamer.earthserver.utils.Permissions;
 
 public class Add implements CommandExecutor {
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
@@ -47,8 +48,11 @@ public class Add implements CommandExecutor {
 		Player user = Bukkit.getPlayer(args[0]);
 
 		if (user == null) {
-			p.sendMessage(ChatColor.RED + args[0] + " is not online!");
-			return true;
+			user = Bukkit.getOfflinePlayer(args[0]).getPlayer();
+			if (user == null) {
+				p.sendMessage(ChatColor.RED + args[0] + " is not online!");
+				return true;
+			}
 		}
 
 		try {

@@ -66,15 +66,18 @@ public class MySQL {
 
 		try {
 			PreparedStatement statement = instance.getConnection().prepareStatement
-					("INSERT INTO " + instance.claimData + " (REGION_ID,REGION_OWNER) VALUE (?,?)");
+					("INSERT INTO " + instance.claimData + " (REGION_ID,REGION_OWNER,IS_PUBLIC,LAST_ONLINE) VALUE (?,?,?,?)");
 			statement.setString(1, region);
 			statement.setString(2, uuid);
+			statement.setString(3, "false");
+			statement.setString(4, Time.getTime());
+			
 			statement.executeUpdate();
+			return true;
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return false;
 		}
-
-		return true;
 	}
 
 	public boolean setPublic(String region) {
@@ -116,7 +119,7 @@ public class MySQL {
 			results.next();
 
 			String names = results.getString("MEMBERS");
-			
+
 			if (names == null) {
 				names = uuid;
 			} else {
@@ -178,6 +181,7 @@ public class MySQL {
 					("SELECT * FROM " + instance.claimData + " WHERE REGION_ID=?");
 			statement.setString(1,region);
 			ResultSet results = statement.executeQuery();
+		
 			results.next();
 
 			statement = instance.getConnection().prepareStatement
@@ -185,7 +189,15 @@ public class MySQL {
 			statement.setString(1, region);
 			statement.executeUpdate();
 
-			return results.getString("MEMBERS");
+			if (results.getBoolean("IS_PUBLIC")) {
+				if (results.getString("MEMBERS") == null) {
+					return ("builder");
+				} else {
+					return (results.getString("MEMBERS") + ",builder");
+				}
+			} else {
+				return (results.getString("MEMBERS"));
+			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -213,7 +225,7 @@ public class MySQL {
 		try {
 
 			PreparedStatement statement = instance.getConnection().prepareStatement
-					("SELECT * FROM " + instance.userData + " WHERE UUID=?");
+					("SELECT * FROM " + instance.permissionData + " WHERE UUID=?");
 			statement.setString(1, uuid);
 			ResultSet results = statement.executeQuery();
 
@@ -225,13 +237,13 @@ public class MySQL {
 					regions = region;
 				}
 				statement = instance.getConnection().prepareStatement
-						("UPDATE " + instance.userData + " SET ADD_PERM=? WHERE UUID=?");
+						("UPDATE " + instance.permissionData + " SET ADD_PERM=? WHERE UUID=?");
 				statement.setString(2,uuid);
 				statement.setString(1,regions);
 				statement.executeUpdate();
 			} else {
 				PreparedStatement insert = instance.getConnection().prepareStatement
-						("INSERT INTO " + instance.userData + " (UUID,ADD_PERM,REMOVE_PERM) VALUE (?,?,?)");
+						("INSERT INTO " + instance.permissionData + " (UUID,ADD_PERM,REMOVE_PERM) VALUE (?,?,?)");
 				insert.setString(1, uuid);
 				insert.setString(2, region);
 				insert.setString(3, null);
@@ -248,7 +260,7 @@ public class MySQL {
 		try {
 
 			PreparedStatement statement = instance.getConnection().prepareStatement
-					("SELECT * FROM " + instance.userData + " WHERE UUID=?");
+					("SELECT * FROM " + instance.permissionData + " WHERE UUID=?");
 			statement.setString(1, uuid);
 			ResultSet results = statement.executeQuery();
 
@@ -260,13 +272,13 @@ public class MySQL {
 					regions = region;
 				}
 				statement = instance.getConnection().prepareStatement
-						("UPDATE " + instance.userData + " SET REMOVE_PERM=? WHERE UUID=?");
+						("UPDATE " + instance.permissionData + " SET REMOVE_PERM=? WHERE UUID=?");
 				statement.setString(2,uuid);
 				statement.setString(1,regions);
 				statement.executeUpdate();
 			} else {
 				PreparedStatement insert = instance.getConnection().prepareStatement
-						("INSERT INTO " + instance.userData + " (UUID,ADD_PERM,REMOVE_PERM) VALUE (?,?,?)");
+						("INSERT INTO " + instance.permissionData + " (UUID,ADD_PERM,REMOVE_PERM) VALUE (?,?,?)");
 				insert.setString(1, uuid);
 				insert.setString(2, null);
 				insert.setString(3, region);
@@ -284,7 +296,7 @@ public class MySQL {
 		try {
 
 			PreparedStatement statement = instance.getConnection().prepareStatement
-					("SELECT * FROM " + instance.userData);
+					("SELECT * FROM " + instance.permissionData);
 			ResultSet results = statement.executeQuery();
 
 			if (results.next()) {
@@ -298,7 +310,7 @@ public class MySQL {
 				remove = results.getString("REMOVE_PERM");
 
 				statement = instance.getConnection().prepareStatement
-						("DELETE FROM " + instance.userData + " WHERE UUID=?");
+						("DELETE FROM " + instance.permissionData + " WHERE UUID=?");
 				statement.setString(1, uuid);
 				statement.executeUpdate();
 
@@ -312,7 +324,7 @@ public class MySQL {
 		}
 		return null;
 	}
-	
+
 	public String[] getMembers(String region) {
 
 		try {
@@ -321,7 +333,7 @@ public class MySQL {
 			statement.setString(1, region);
 			ResultSet results = statement.executeQuery();
 			results.next();
-			
+
 			if (results.getString("MEMBERS") == null) {
 				return null;
 			} else {
@@ -333,7 +345,7 @@ public class MySQL {
 		}
 		return null;
 	}
-	
+
 	public boolean isPublic(String region) {
 
 		try {
@@ -349,6 +361,66 @@ public class MySQL {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	public boolean hasRegion(String uuid) {
+
+		try {
+			PreparedStatement statement = instance.getConnection().prepareStatement
+					("SELECT * FROM " + instance.claimData + " WHERE REGION_OWNER=?");
+			statement.setString(1, uuid);
+			ResultSet results = statement.executeQuery();
+
+			return (results.next());
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+
+	}
+
+	public void updateTime(String region) {
+
+		String time = Time.getTime();
+
+		try {
+			PreparedStatement statement = instance.getConnection().prepareStatement
+					("UPDATE " + instance.claimData + " SET LAST_ONLINE=? WHERE REGION_ID=?");
+			statement.setString(2, region);
+			statement.setString(1, time);
+			statement.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public String getRegions(String uuid) {
+		
+		try {
+			PreparedStatement statement = instance.getConnection().prepareStatement
+					("SELECT * FROM " + instance.claimData + " WHERE REGION_OWNER=?");
+			statement.setString(1, uuid);
+			ResultSet results = statement.executeQuery();
+			
+			String regions = null;
+			
+			while(results.next()) {
+				
+				if (regions == null) {
+					regions = results.getString("REGION_ID");
+				} else {
+					regions = regions + ";" + results.getString("REGION_ID");
+				}
+			}
+			return (regions);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 
 }

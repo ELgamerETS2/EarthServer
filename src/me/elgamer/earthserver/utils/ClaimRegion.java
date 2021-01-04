@@ -222,7 +222,7 @@ public class ClaimRegion {
 
 				AnvilGui gui = new AnvilGui(p, new AnvilGui.AnvilClickEventHandler(){
 
-					@SuppressWarnings("deprecation")
+					@SuppressWarnings({ "deprecation" })
 					@Override
 					public void onAnvilClick(AnvilClickEvent e) {
 						if (e.getSlot() == AnvilGui.AnvilSlot.OUTPUT) {
@@ -234,16 +234,20 @@ public class ClaimRegion {
 
 							//Check if name contains 1 word and only alphabetical characters
 							if (wordMatcher.matches()) {
-
-								Player user = Bukkit.getPlayer(name);
-
-								if (user == null) {
-									user = Bukkit.getOfflinePlayer(name).getPlayer();
+								
+								String uuid;
+								
+								if (Bukkit.getPlayer(name) != null) {
+									uuid = Bukkit.getPlayer(name).getUniqueId().toString();
+								} else if (Bukkit.getOfflinePlayer(name) != null && Bukkit.getOfflinePlayer(name).hasPlayedBefore()){
+									uuid = Bukkit.getOfflinePlayer(name).getUniqueId().toString();
+								} else {
+									uuid = null;
 								}
 
-								if (user != null) {
+								if (uuid != null) {
 
-									if (user.getUniqueId().toString().equals(p.getUniqueId().toString())) {
+									if (uuid.equals(p.getUniqueId().toString())) {
 										p.sendMessage(ChatColor.RED + "You already own this region!");
 									} else {
 
@@ -255,16 +259,16 @@ public class ClaimRegion {
 										ProtectedRegion claim = regions.getRegion(region);
 										DefaultDomain members = claim.getMembers();
 
-										Set<String> set = members.getPlayers();
+										Set<UUID> set = members.getUniqueIds();
 
-										if (!(set.contains(user.getUniqueId().toString()))) {
+										if (!(set.contains(UUID.fromString(uuid)))) {
 
-											members.addPlayer(user.getUniqueId().toString());
+											members.addPlayer(UUID.fromString(uuid));
 
 											claim.setMembers(members);
-											mysql.addMember(region, user.getUniqueId().toString());
+											mysql.addMember(region, uuid);
 
-											mysql.addPermission(p.getUniqueId().toString(), region);
+											mysql.addPermission(uuid, region);
 
 											p.sendMessage(ChatColor.GREEN + name + " added to region " + region + "!");
 
@@ -280,7 +284,7 @@ public class ClaimRegion {
 									}
 
 								} else {
-									p.sendMessage(ChatColor.RED + name + " does not exist!");
+									p.sendMessage(ChatColor.RED + name + " has never connected to this server!");
 								}
 
 							} else {
@@ -346,13 +350,17 @@ public class ClaimRegion {
 							//Check if name contains 1 word and only alphabetical characters
 							if (wordMatcher.matches()) {
 
-								Player user = Bukkit.getPlayer(name);
+								String uuid;
 
-								if (user == null) {
-									user = Bukkit.getOfflinePlayer(name).getPlayer();
+								if (Bukkit.getPlayer(name) != null) {
+									uuid = Bukkit.getPlayer(name).getUniqueId().toString();
+								} else if (Bukkit.getOfflinePlayer(name) != null && Bukkit.getOfflinePlayer(name).hasPlayedBefore()){
+									uuid = Bukkit.getOfflinePlayer(name).getUniqueId().toString();
+								} else {
+									uuid = null;
 								}
 
-								if (user != null) {
+								if (uuid != null) {
 
 									World world = Bukkit.getWorld(config.getString("World_Name"));
 
@@ -362,16 +370,16 @@ public class ClaimRegion {
 									ProtectedRegion claim = regions.getRegion(region);
 									DefaultDomain members = claim.getMembers();
 
-									Set<String> set = members.getPlayers();
+									Set<UUID> set = members.getUniqueIds();
 
-									if (!(set.contains(user.getUniqueId().toString()))) {
+									if (set.contains(UUID.fromString(uuid))) {
 
-										members.removePlayer(user.getUniqueId().toString());
+										members.removePlayer(UUID.fromString(uuid));
 
 										claim.setMembers(members);
-										mysql.removeMember(region, user.getUniqueId().toString());
+										mysql.removeMember(region, uuid);
 
-										mysql.removePermission(p.getUniqueId().toString(), region);
+										mysql.removePermission(uuid, region);
 
 										p.sendMessage(ChatColor.RED + name + " removed from region " + region + "!");
 
@@ -385,7 +393,7 @@ public class ClaimRegion {
 									}
 
 								} else {
-									p.sendMessage(ChatColor.RED + name + " does not exist!");
+									p.sendMessage(ChatColor.RED + name + " has never connected to this server!");
 								}
 
 							} else {
@@ -496,15 +504,19 @@ public class ClaimRegion {
 
 			if (p.getUniqueId().toString().equals(mysql.getOwner(region))) {
 
-				Player user = Bukkit.getPlayer(name);
-
-				if (user == null) {
-					user = Bukkit.getOfflinePlayer(name).getPlayer();
+				String uuid;
+				
+				if (Bukkit.getPlayer(name) != null) {
+					uuid = Bukkit.getPlayer(name).getUniqueId().toString();
+				} else if (Bukkit.getOfflinePlayer(name) != null && Bukkit.getOfflinePlayer(name).hasPlayedBefore()){
+					uuid = Bukkit.getOfflinePlayer(name).getUniqueId().toString();
+				} else {
+					uuid = null;
 				}
 
-				if (user != null) {
+				if (uuid != null) {
 
-					if (user.getUniqueId().toString().equals(p.getUniqueId().toString())) {
+					if (uuid.equals(p.getUniqueId().toString())) {
 						p.sendMessage(ChatColor.RED + "You already own this region!");
 					} else {
 
@@ -516,16 +528,16 @@ public class ClaimRegion {
 						ProtectedRegion claim = regions.getRegion(region);
 						DefaultDomain members = claim.getMembers();
 
-						Set<String> set = members.getPlayers();
+						Set<UUID> set = members.getUniqueIds();
 
-						if (!(set.contains(user.getUniqueId().toString()))) {
+						if (!(set.contains(UUID.fromString(uuid)))) {
 
-							members.addPlayer(user.getUniqueId().toString());
+							members.addPlayer(UUID.fromString(uuid));
 
 							claim.setMembers(members);
-							mysql.addMember(region, user.getUniqueId().toString());
+							mysql.addMember(region, uuid);
 
-							mysql.addPermission(p.getUniqueId().toString(), region);
+							mysql.addPermission(uuid, region);
 
 							p.sendMessage(ChatColor.GREEN + name + " added to region " + region + "!");
 
@@ -541,7 +553,7 @@ public class ClaimRegion {
 					}
 
 				} else {
-					p.sendMessage(ChatColor.RED + name + " does not exist!");
+					p.sendMessage(ChatColor.RED + name + " has never connected to this server!");
 				}
 
 			} else {
@@ -569,13 +581,17 @@ public class ClaimRegion {
 
 			if (p.getUniqueId().toString().equals(mysql.getOwner(region))) {
 
-				Player user = Bukkit.getPlayer(name);
-
-				if (user == null) {
-					user = Bukkit.getOfflinePlayer(name).getPlayer();
+				String uuid;
+				
+				if (Bukkit.getPlayer(name) != null) {
+					uuid = Bukkit.getPlayer(name).getUniqueId().toString();
+				} else if (Bukkit.getOfflinePlayer(name) != null && Bukkit.getOfflinePlayer(name).hasPlayedBefore()){
+					uuid = Bukkit.getOfflinePlayer(name).getUniqueId().toString();
+				} else {
+					uuid = null;
 				}
 
-				if (user != null) {
+				if (uuid != null) {
 
 					World world = Bukkit.getWorld(config.getString("World_Name"));
 
@@ -585,16 +601,16 @@ public class ClaimRegion {
 					ProtectedRegion claim = regions.getRegion(region);
 					DefaultDomain members = claim.getMembers();
 
-					Set<String> set = members.getPlayers();
+					Set<UUID> set = members.getUniqueIds();
 
-					if (!(set.contains(user.getUniqueId().toString()))) {
+					if (set.contains(UUID.fromString(uuid))) {
 
-						members.removePlayer(user.getUniqueId().toString());
+						members.removePlayer(UUID.fromString(uuid));
 
 						claim.setMembers(members);
-						mysql.removeMember(region, user.getUniqueId().toString());
+						mysql.removeMember(region, uuid);
 
-						mysql.removePermission(p.getUniqueId().toString(), region);
+						mysql.removePermission(uuid, region);
 
 						p.sendMessage(ChatColor.RED + name + " removed from region " + region + "!");
 
@@ -608,7 +624,7 @@ public class ClaimRegion {
 					}
 
 				} else {
-					p.sendMessage(ChatColor.RED + name + " does not exist!");
+					p.sendMessage(ChatColor.RED + name + " has never connected to this server!");
 				}
 
 			} else {
@@ -627,12 +643,12 @@ public class ClaimRegion {
 
 		p.closeInventory();
 		p.sendMessage(Utils.chat("&7To open the claim gui do &a/claim &7or use the commands below!"));
-		p.sendMessage(Utils.chat("&a/claim info &7returns the region name and owner!"));
+		p.sendMessage(Utils.chat("&a/claim info &7returns the region name, owner and members!"));
 		p.sendMessage(Utils.chat("&a/claim [radius] &7claims all 512x512 regions in a square radius of regions!"));
 		p.sendMessage(Utils.chat("&a/unclaim [radius] &7unclaims all 512x512 regions in a square radius of regions!"));
 		p.sendMessage(Utils.chat("&a/teamclaim [radius] &7claims all 512x512 regions in a square radius of regions and makes them public to all builders!"));
-		p.sendMessage(Utils.chat("&a/add <user> [radius] &7adds the specified user to all 512x512 regions in a square radius of regions!"));
-		p.sendMessage(Utils.chat("&a/remove <user> [radius] &7removes the specified user to all 512x512 regions in a square radius of regions!"));
+		p.sendMessage(Utils.chat("&a/addmember <user> [radius] &7adds the specified user to all 512x512 regions in a square radius of regions!"));
+		p.sendMessage(Utils.chat("&a/removemember <user> [radius] &7removes the specified user to all 512x512 regions in a square radius of regions!"));
 		p.sendMessage(Utils.chat("&a/public [radius] &7makes all 512x512 regions public to builders in a square radius of regions!"));
 		p.sendMessage(Utils.chat("&a/private [radius] &7makes all 512x512 regions private in a square radius of regions!"));
 
@@ -658,10 +674,10 @@ public class ClaimRegion {
 			
 			if (members != null) {
 				for (String m : members) {
-					if (Bukkit.getPlayer(mysql.getOwner(region)) != null) {
-						regionMember = Bukkit.getPlayer(UUID.fromString(mysql.getOwner(region))).getName();
+					if (Bukkit.getPlayer(UUID.fromString(m)) != null) {
+						regionMember = Bukkit.getPlayer(UUID.fromString(m)).getName();
 					} else {
-						regionMember = Bukkit.getOfflinePlayer(UUID.fromString(mysql.getOwner(region))).getName();
+						regionMember = Bukkit.getOfflinePlayer(UUID.fromString(m)).getName();
 					}
 					if (names == null) {
 						names = regionMember;
@@ -673,9 +689,7 @@ public class ClaimRegion {
 			
 			if (isPublic == true) {
 				p.sendMessage(ChatColor.GREEN + "The region " + region + " is claimed by " + regionOwner + " and is public");
-			}
-			
-			if (names == null) {
+			} else if (names == null) {
 				p.sendMessage(ChatColor.GREEN + "The region " + region + " is claimed by " + regionOwner + " and is private");
 			} else {
 				p.sendMessage(ChatColor.GREEN + "The region " + region + " is claimed by " + regionOwner + " and has members " + names);

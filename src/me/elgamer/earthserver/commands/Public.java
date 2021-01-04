@@ -95,7 +95,7 @@ public class Public implements CommandExecutor {
 
 			for (int j = 1; j <= radius*2+1; j++) {
 
-				points[((i-1)*3+j)-1] = getRegion(x, z);
+				points[((i-1)*(radius*2+1)+j)-1] = getRegion(x, z);
 				if (j!=radius*2+1) {x += 512;}
 				else {x = l.getX() - 512*radius;}
 			}

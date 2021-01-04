@@ -16,7 +16,7 @@ public class Adminclaim implements CommandExecutor {
 
 		//Check is command sender is a player
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("&cYou administrate claims from the console!");
+			sender.sendMessage("&cYou can't administrate claims from the console!");
 			return true;
 		}
 

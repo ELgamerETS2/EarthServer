@@ -29,7 +29,7 @@ public class Permissions {
 
 			String uuid = entry[0];
 
-			if (uuid != "builder") {
+			if (!uuid.equals("builder")) {
 
 				UserManager userManager = lp.getUserManager();
 				CompletableFuture<User> userFuture = userManager.loadUser(UUID.fromString(uuid));
@@ -76,7 +76,7 @@ public class Permissions {
 
 				if (entry[1] != null) {
 
-					String[] add = entry[1].split(",");
+					String[] add = entry[1].split(";");
 
 					for (int i = 0; i < add.length; i++) {
 
@@ -92,7 +92,7 @@ public class Permissions {
 
 				if (entry[2] != null) {
 
-					String[] remove = entry[2].split(",");
+					String[] remove = entry[2].split(";");
 
 					for (int j = 0; j < remove.length; j++) {
 
