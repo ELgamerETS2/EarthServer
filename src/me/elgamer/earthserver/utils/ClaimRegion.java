@@ -271,7 +271,8 @@ public class ClaimRegion {
 											mysql.addPermission(uuid, region);
 
 											p.sendMessage(ChatColor.GREEN + name + " added to region " + region + "!");
-
+											Permissions.updatePermissions();
+											
 											try {
 												regions.save();
 											} catch (StorageException e1) {
@@ -382,6 +383,7 @@ public class ClaimRegion {
 										mysql.removePermission(uuid, region);
 
 										p.sendMessage(ChatColor.RED + name + " removed from region " + region + "!");
+										Permissions.updatePermissions();
 
 										try {
 											regions.save();

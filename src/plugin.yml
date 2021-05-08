@@ -35,3 +35,6 @@ commands:
     tpblock:
         usage: /tpblock <x> <y> <z>
         description: Simple command to place teleport command blocks.
+    locationRequest:
+        usage: /locationRequest <name>
+        description: Creates a location request for the teleport gui.

@@ -12,12 +12,17 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.elgamer.earthserver.commands.Add;
+import me.elgamer.earthserver.commands.AddLocation;
 import me.elgamer.earthserver.commands.AddToDatabase;
 import me.elgamer.earthserver.commands.Adminclaim;
 import me.elgamer.earthserver.commands.Claim;
+import me.elgamer.earthserver.commands.DenyLocation;
 import me.elgamer.earthserver.commands.Private;
 import me.elgamer.earthserver.commands.Public;
 import me.elgamer.earthserver.commands.Remove;
+import me.elgamer.earthserver.commands.RemoveLocation;
+import me.elgamer.earthserver.commands.RequestLocation;
+import me.elgamer.earthserver.commands.Requests;
 import me.elgamer.earthserver.commands.TPBlock;
 import me.elgamer.earthserver.commands.Teamclaim;
 import me.elgamer.earthserver.commands.Unclaim;
@@ -32,7 +37,7 @@ public class Main extends JavaPlugin {
 
 	//MySQL
 	private Connection connection;
-	public String host, database, username, password, claimData, permissionData;
+	public String host, database, username, password, claimData, permissionData, locationData, locationRequestData;
 	public int port;
 
 	//Other
@@ -74,6 +79,12 @@ public class Main extends JavaPlugin {
 		getCommand("adminclaim").setExecutor(new Adminclaim());
 		getCommand("addtodatabase").setExecutor(new AddToDatabase());
 		getCommand("tpblock").setExecutor(new TPBlock());
+		
+		getCommand("locationrequest").setExecutor(new RequestLocation());
+		getCommand("addlocation").setExecutor(new AddLocation());
+		getCommand("removelocation").setExecutor(new RemoveLocation());
+		getCommand("denyrequest").setExecutor(new DenyLocation());
+		getCommand("requests").setExecutor(new Requests());
 
 		//GUI
 		ClaimGui.initialize();
@@ -106,7 +117,10 @@ public class Main extends JavaPlugin {
 		password = config.getString("MySQL_password");
 		claimData = config.getString("MySQL_claimData");
 		permissionData = config.getString("MySQL_permissionData");
+		locationData = config.getString("MySQL_locationData");
+		locationRequestData = config.getString("MySQL_locationRequestData");
 
+		
 		try {
 
 			synchronized (this) {
@@ -187,6 +201,30 @@ public class Main extends JavaPlugin {
 			PreparedStatement statement = instance.getConnection().prepareStatement
 					("CREATE TABLE IF NOT EXISTS " + permissionData
 							+ " ( UUID VARCHAR(36) NOT NULL , ADD_PERM TEXT NULL DEFAULT NULL , REMOVE_PERM TEXT NULL DEFAULT NULL , UNIQUE (UUID))");
+			statement.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void createLocationTable() {
+		try {
+			PreparedStatement statement = instance.getConnection().prepareStatement
+					("CREATE TABLE IF NOT EXISTS " + locationData
+							+ " ( LOCATION TEXT NOT NULL , CATEGORY TEXT NOT NULL , SUBCATEGORY TEXT NOT NULL , X DOUBLE NOT NULL , Y DOUBLE NOT NULL , Z DOUBLE NOT NULL , PITCH FLOAT NOT NULL , YAW FLOAT NOT NULL , PITCH  NOT NULL , UNIQUE (LOCATION))");
+			statement.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void createLocationRequestTable() {
+		try {
+			PreparedStatement statement = instance.getConnection().prepareStatement
+					("CREATE TABLE IF NOT EXISTS " + locationRequestData
+							+ " ( LOCATION TEXT NOT NULL , X DOUBLE NOT NULL , Y DOUBLE NOT NULL , Z DOUBLE NOT NULL , PITCH FLOAT NOT NULL , YAW FLOAT NOT NULL , PITCH  NOT NULL");
 			statement.executeUpdate();
 
 		} catch (SQLException e) {
