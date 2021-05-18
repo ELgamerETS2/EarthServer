@@ -7,6 +7,7 @@ import java.sql.SQLException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -46,6 +47,8 @@ public class Main extends JavaPlugin {
 
 	static Main instance;
 	static FileConfiguration config;
+	
+	public static Location spawn;
 
 	@Override
 	public void onEnable() {
@@ -58,6 +61,9 @@ public class Main extends JavaPlugin {
 
 		//MySQL		
 		mysqlSetup();
+		
+		//Spawn
+		spawn = new Location(Bukkit.getWorld(config.getString("World_Name")),config.getDouble("Spawn.x"), config.getDouble("Spawn.y"), config.getDouble("Spawn.z"));
 
 		//Creates the mysql table if not existing
 		createClaimTable();

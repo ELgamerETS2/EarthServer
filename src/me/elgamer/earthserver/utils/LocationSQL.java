@@ -3,6 +3,7 @@ package me.elgamer.earthserver.utils;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
@@ -207,9 +208,9 @@ public class LocationSQL {
 		return false;
 
 	}
-	
+
 	public static HashMap<String, Location> getRequests(){
-		
+
 		Main instance = Main.getInstance();
 		HashMap<String, Location> requests = new HashMap<String, Location>();
 
@@ -217,11 +218,11 @@ public class LocationSQL {
 			PreparedStatement statement = instance.getConnection().prepareStatement
 					("SELECT * FROM " + instance.locationRequestData);
 			ResultSet results = statement.executeQuery();
-			
+
 			while (results.next()) {
-				
+
 				requests.put(results.getString("LOCATION"), new Location(Bukkit.getWorld("world"), results.getDouble("X"), results.getDouble("Y"), results.getDouble("Z"), results.getFloat("PITCH"), results.getFloat("YAW")));
-					
+
 			}
 
 			return requests;
@@ -230,6 +231,79 @@ public class LocationSQL {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public static int CategoryCount(String cat) {
+
+		Main instance = Main.getInstance();
+
+		try {
+			PreparedStatement statement = instance.getConnection().prepareStatement
+					("SELECT COUNT(*) FROM " + instance.locationData + " WHERE CATEGORY=?");
+			statement.setString(1, cat);
+			ResultSet results = statement.executeQuery();
+
+			results.next();
+
+			return (results.getInt(1));
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
+
+	}
+	
+	public static ArrayList<String[]> getLocations(String cat){
+		
+		Main instance = Main.getInstance();
+		ArrayList<String[]> locations = new ArrayList<String[]>();
+
+		try {
+			PreparedStatement statement = instance.getConnection().prepareStatement
+					("SELECT * FROM " + instance.locationData + " WHERE CATEGORY=?");
+			ResultSet results = statement.executeQuery();
+
+			while (results.next()) {
+
+				locations.add(new String[] {results.getString("LOCATION"), results.getString("SUBCATEGORY")});
+				
+			}
+
+			return locations;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+		
+	}
+	
+	public static Location getLocation(String name) {
+		
+		Main instance = Main.getInstance();
+
+		try {
+			PreparedStatement statement = instance.getConnection().prepareStatement
+					("SELECT * FROM " + instance.locationData + " WHERE LOCATION=?");
+			statement.setString(1, name);
+			ResultSet results = statement.executeQuery();
+
+			results.next();
+
+			return (new Location(Bukkit.getWorld(instance.getConfig().getString("World_Name")),
+					results.getDouble("X"),
+					results.getDouble("Y"),
+					results.getDouble("Z"),
+					results.getFloat("PITCH"),
+					results.getFloat("YAW")));
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		
 	}
 
 }

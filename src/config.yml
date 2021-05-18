@@ -11,3 +11,8 @@ MySQL_permissionData: permission_data
 #Other
 
 World_Name: world
+
+Spawn:
+    x:
+    y:
+    z:

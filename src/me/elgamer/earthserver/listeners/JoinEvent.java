@@ -36,10 +36,10 @@ public class JoinEvent implements Listener {
 			mysql.updateTime(regions[i]);
 		}
 		
-		if (p.hasPermission("group.communitylead")) {
+		if (p.hasPermission("earthserver.location.add")) {
 			
 			if (LocationSQL.requestExists()) {
-				p.sendMessage(ChatColor.GREEN + "There is a new location request, check with /locationsrequests");
+				Bukkit.getScheduler().runTaskLater (Main.getInstance(), () -> p.sendMessage(ChatColor.GREEN + "There is a new location request, check with /requests"), 20); //20 ticks equal 1 second
 			}
 			
 		}

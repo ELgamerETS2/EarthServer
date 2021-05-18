@@ -15,15 +15,14 @@ public class Utils {
 		return ChatColor.translateAlternateColorCodes('&', s);
 	}
 	
-	@SuppressWarnings("deprecation")
-	public static ItemStack createItem(Inventory inv, int materialId, int amount, int invSlot, String displayName, String... loreString) {
+	public static ItemStack createItem(Inventory inv, Material material, int amount, int invSlot, String displayName, String... loreString) {
 		
 		ItemStack item;
 		
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		List<String> lore = new ArrayList();
 		
-		item = new ItemStack(Material.getMaterial(materialId), amount);
+		item = new ItemStack(material, amount);
 		
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName(Utils.chat(displayName));
@@ -39,15 +38,15 @@ public class Utils {
 		
 	}
 	
-	@SuppressWarnings({ "rawtypes", "deprecation" })
-	public static ItemStack createItemByte(Inventory inv, int materialId, int byteId, int amount, int invSlot, String displayName, String... loreString) {
+	@SuppressWarnings({ "rawtypes" })
+	public static ItemStack createItemByte(Inventory inv, Material material, int byteId, int amount, int invSlot, String displayName, String... loreString) {
 			
 			ItemStack item;
 			
 			@SuppressWarnings("unchecked")
 			List<String> lore = new ArrayList();
 			
-			item = new ItemStack(Material.getMaterial(materialId), amount, (short) byteId);
+			item = new ItemStack(material, amount, (short) byteId);
 			
 			ItemMeta meta = item.getItemMeta();
 			meta.setDisplayName(Utils.chat(displayName));

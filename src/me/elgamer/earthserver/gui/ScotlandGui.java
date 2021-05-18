@@ -12,14 +12,14 @@ import org.bukkit.inventory.ItemStack;
 import me.elgamer.earthserver.utils.LocationSQL;
 import me.elgamer.earthserver.utils.Utils;
 
-public class EnglandGui {
-
+public class ScotlandGui {
+	
 	public static Inventory inv;
 	public static String inventory_name;
 	public static int inv_rows = 5 * 9;
 
 	public static void initialize() {
-		inventory_name = ChatColor.AQUA + "" + ChatColor.BOLD + "England";
+		inventory_name = ChatColor.AQUA + "" + ChatColor.BOLD + "Scotland";
 
 		inv = Bukkit.createInventory(null, inv_rows);
 
@@ -31,66 +31,19 @@ public class EnglandGui {
 
 		inv.clear();
 
-		if (LocationSQL.CategoryCount("london") + LocationSQL.CategoryCount("england") > 21) {
 
-			ArrayList<String[]> locations = LocationSQL.getLocations("england");
+		ArrayList<String[]> locations = LocationSQL.getLocations("scotland");
 
-			int i = 11;
+		int i = 11;
 
-			for (String[] s : locations) {
+		for (String[] s : locations) {
 
-				Utils.createItemByte(inv, Material.CONCRETE, 5, 1, i, ChatColor.AQUA + "" + ChatColor.BOLD + s[0] + ", " + s[1], "Click to teleport to this location");
+			Utils.createItemByte(inv, Material.CONCRETE, 5, 1, i, ChatColor.AQUA + "" + ChatColor.BOLD + s[0] + ", " + s[1], "Click to teleport to this location");
 
-				i++;
+			i++;
 
-				if (i % 9 == 0) {
-					i = i + 2;
-				}
-
-			}
-
-
-		} else {
-
-			ArrayList<String[]> locations = LocationSQL.getLocations("england");
-
-			int i = 11;
-
-			if (locations == null) {
-
-			} else {
-
-				for (String[] s : locations) {
-
-					Utils.createItemByte(inv, Material.CONCRETE, 5, 1, i, ChatColor.AQUA + "" + ChatColor.BOLD + s[0] + ", " + s[1], "Click to teleport to this location");
-
-					i++;
-
-					if (i % 9 == 0) {
-						i = i + 2;
-					}
-
-				}
-
-			}
-
-			locations = LocationSQL.getLocations("london");
-
-			if (locations == null) {
-
-			} else {
-
-				for (String[] s : locations) {
-
-					Utils.createItemByte(inv, Material.CONCRETE, 5, 1, i, ChatColor.AQUA + "" + ChatColor.BOLD + s[0] + ", " + s[1] + ", " + "London", "Click to teleport to this location");
-
-					i++;
-
-					if (i % 9 == 0) {
-						i = i + 2;
-					}
-
-				}
+			if (i % 9 == 0) {
+				i = i + 2;
 			}
 
 		}
@@ -113,7 +66,7 @@ public class EnglandGui {
 
 			String[] location = clicked.getItemMeta().getDisplayName().replace(" ", "").split(",");
 			p.teleport(LocationSQL.getLocation(ChatColor.stripColor(location[0])));
-			
+
 		}
 	}
 
