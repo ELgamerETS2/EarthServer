@@ -29,7 +29,7 @@ public class Requests implements CommandExecutor {
 			return true;
 		}
 
-		if (!(LocationSQL.requestExists(args[0]))) {
+		if (!(LocationSQL.requestExists())) {
 			p.sendMessage(ChatColor.RED + "There are no location requests");
 			return true;
 		}
@@ -37,6 +37,7 @@ public class Requests implements CommandExecutor {
 		int i = 0;
 
 		HashMap<String, Location> requests = LocationSQL.getRequests();
+		p.sendMessage(ChatColor.GREEN + "Requests:");
 		if (requests.size() > 9) {
 
 			for (Entry<String, Location> entry : requests.entrySet()) {
@@ -46,14 +47,14 @@ public class Requests implements CommandExecutor {
 				if (i == 9) {
 					break;
 				}
-				p.sendMessage(ChatColor.GREEN + "Location: " + entry.getKey() + " Coordinates: " + entry.getValue().getX() + " " + entry.getValue().getZ() + " " + entry.getValue().getZ());
+				p.sendMessage(ChatColor.GRAY + entry.getKey());
 
 			}
 
 		} else {
 			for (Entry<String, Location> entry : requests.entrySet()) {
 
-				p.sendMessage(ChatColor.GREEN + "Location: " + entry.getKey() + " Coordinates: " + entry.getValue().getX() + " " + entry.getValue().getZ() + " " + entry.getValue().getZ());
+				p.sendMessage(ChatColor.GRAY + entry.getKey());
 
 			}
 		}

@@ -35,7 +35,7 @@ public class SwitchServerGui {
 		Utils.createItem(inv, Material.BEACON, 1, 12, ChatColor.AQUA + "" + ChatColor.BOLD + "Lobby Server",
 				Utils.chat("&fTeleports you back to the lobby server."));
 
-		Utils.createItem(inv, Material.BRICK, 1, 14, ChatColor.AQUA + "" + ChatColor.BOLD + "Building",
+		Utils.createItem(inv, Material.BRICK, 1, 14, ChatColor.AQUA + "" + ChatColor.BOLD + "Building Server",
 				ChatColor.WHITE + "Teleport to the building server.",
 				ChatColor.WHITE + "No requirements to start building.",
 				ChatColor.WHITE + "Recommended version is 1.16.5.",

@@ -69,7 +69,7 @@ public class LocationSQL {
 	}
 
 	//Creates a location request
-	public static void addRequest(String loc, Location l) {
+	public static boolean addRequest(String loc, Location l) {
 
 		Main instance = Main.getInstance();
 
@@ -86,8 +86,11 @@ public class LocationSQL {
 
 			statement.executeUpdate();
 
+			return true;
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return false;
 		}
 
 
@@ -100,7 +103,7 @@ public class LocationSQL {
 
 		try {
 			PreparedStatement statement = instance.getConnection().prepareStatement
-					("INSERT INTO " + instance.locationRequestData + " (LOCATION,CATEGORY,SUBCATEGORY,X,Y,Z,PITCH,YAW) VALUE (?,?,?,?,?,?,?,?)");
+					("INSERT INTO " + instance.locationData + " (LOCATION,CATEGORY,SUBCATEGORY,X,Y,Z,PITCH,YAW) VALUE (?,?,?,?,?,?,?,?)");
 			statement.setString(1, loc);
 			statement.setString(2, cat);
 			statement.setString(3, subcat);
@@ -160,9 +163,10 @@ public class LocationSQL {
 
 			statement = instance.getConnection().prepareStatement
 					("DELETE FROM " + instance.locationRequestData + " WHERE LOCATION=?");
+			statement.setString(1, loc);
 			statement.executeUpdate();
 
-			return (new Location(Bukkit.getWorld("world"), results.getDouble("X"), results.getDouble("Y"), results.getDouble("Z"), results.getFloat("PITCH"), results.getFloat("YAW")));
+			return (new Location(Bukkit.getWorld("world"), results.getDouble("X"), results.getDouble("Y"), results.getDouble("Z"), results.getFloat("YAW"), results.getFloat("PITCH")));
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -170,6 +174,27 @@ public class LocationSQL {
 		return null;
 
 	}
+	
+	//Return the location of a request and deletes it subsequently
+		public static Location toRequestLocation(String loc) {
+
+			Main instance = Main.getInstance();
+
+			try {
+				PreparedStatement statement = instance.getConnection().prepareStatement
+						("SELECT * FROM " + instance.locationRequestData + " WHERE LOCATION=?");
+				statement.setString(1, loc);
+				ResultSet results = statement.executeQuery();
+				results.next();
+
+				return (new Location(Bukkit.getWorld("world"), results.getDouble("X"), results.getDouble("Y"), results.getDouble("Z"), results.getFloat("YAW"), results.getFloat("PITCH")));
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return null;
+
+		}
 
 	//Remove location request
 	public static boolean removeRequest(String loc) {
@@ -198,6 +223,7 @@ public class LocationSQL {
 		try {
 			PreparedStatement statement = instance.getConnection().prepareStatement
 					("DELETE FROM " + instance.locationData + " WHERE LOCATION=?");
+			statement.setString(1, loc);
 			statement.executeUpdate();
 
 			return true;
@@ -262,6 +288,7 @@ public class LocationSQL {
 		try {
 			PreparedStatement statement = instance.getConnection().prepareStatement
 					("SELECT * FROM " + instance.locationData + " WHERE CATEGORY=?");
+			statement.setString(1, cat);
 			ResultSet results = statement.executeQuery();
 
 			while (results.next()) {
@@ -295,8 +322,8 @@ public class LocationSQL {
 					results.getDouble("X"),
 					results.getDouble("Y"),
 					results.getDouble("Z"),
-					results.getFloat("PITCH"),
-					results.getFloat("YAW")));
+					results.getFloat("YAW"),
+					results.getFloat("PITCH")));
 
 		} catch (SQLException e) {
 			e.printStackTrace();

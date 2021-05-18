@@ -35,6 +35,24 @@ commands:
     tpblock:
         usage: /tpblock <x> <y> <z>
         description: Simple command to place teleport command blocks.
-    locationRequest:
+    locationrequest:
         usage: /locationRequest <name>
         description: Creates a location request for the teleport gui.
+    addlocation:
+        usage: /addlocation
+        description: Adds the location to the gui
+    denyrequest:
+        usage: /denyrequest
+        description: Denies a location request
+    requests:
+        usage: /requests
+        description: Lists all location requests
+    removelocation:
+        usage: /removelocation
+        description: removes a location from the gui
+    navigator:
+        usage: /navigator
+        description: opens the navigation gui
+    torequest:
+        usage: /torequest
+        description: teleports the player to the exact location where the location was requested

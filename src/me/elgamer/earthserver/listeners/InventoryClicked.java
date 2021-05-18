@@ -32,7 +32,14 @@ public class InventoryClicked implements Listener {
 	
 	@EventHandler
 	public void onClick(InventoryClickEvent e) {
-		String title = e.getInventory().getTitle();
+		
+		
+		if (e.getCurrentItem() == null) {
+			return;
+		}
+		
+		String title = e.getView().getTitle();
+				
 		if (title.equals(ClaimGui.inventory_name)) {
 			e.setCancelled(true);
 			if (e.getCurrentItem() == null){

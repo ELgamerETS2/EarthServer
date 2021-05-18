@@ -8,7 +8,11 @@ import java.sql.SQLException;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -18,6 +22,8 @@ import me.elgamer.earthserver.commands.AddToDatabase;
 import me.elgamer.earthserver.commands.Adminclaim;
 import me.elgamer.earthserver.commands.Claim;
 import me.elgamer.earthserver.commands.DenyLocation;
+import me.elgamer.earthserver.commands.GotoRequest;
+import me.elgamer.earthserver.commands.OpenGui;
 import me.elgamer.earthserver.commands.Private;
 import me.elgamer.earthserver.commands.Public;
 import me.elgamer.earthserver.commands.Remove;
@@ -28,9 +34,19 @@ import me.elgamer.earthserver.commands.TPBlock;
 import me.elgamer.earthserver.commands.Teamclaim;
 import me.elgamer.earthserver.commands.Unclaim;
 import me.elgamer.earthserver.gui.ClaimGui;
+import me.elgamer.earthserver.gui.EnglandGui;
+import me.elgamer.earthserver.gui.LocationGui;
+import me.elgamer.earthserver.gui.LondonGui;
+import me.elgamer.earthserver.gui.NavigationGui;
+import me.elgamer.earthserver.gui.NorthernIrelandGui;
+import me.elgamer.earthserver.gui.OtherGui;
+import me.elgamer.earthserver.gui.ScotlandGui;
+import me.elgamer.earthserver.gui.SwitchServerGui;
+import me.elgamer.earthserver.gui.WalesGui;
 import me.elgamer.earthserver.listeners.InventoryClicked;
 import me.elgamer.earthserver.listeners.JoinEvent;
 import me.elgamer.earthserver.listeners.LeaveEvent;
+import me.elgamer.earthserver.listeners.PlayerInteract;
 import net.luckperms.api.LuckPerms;
 import net.milkbowl.vault.permission.Permission;
 
@@ -47,8 +63,11 @@ public class Main extends JavaPlugin {
 
 	static Main instance;
 	static FileConfiguration config;
-	
+
 	public static Location spawn;
+
+	public ItemStack slot5;
+	public static ItemStack gui;
 
 	@Override
 	public void onEnable() {
@@ -61,18 +80,24 @@ public class Main extends JavaPlugin {
 
 		//MySQL		
 		mysqlSetup();
-		
+
 		//Spawn
 		spawn = new Location(Bukkit.getWorld(config.getString("World_Name")),config.getDouble("Spawn.x"), config.getDouble("Spawn.y"), config.getDouble("Spawn.z"));
 
 		//Creates the mysql table if not existing
 		createClaimTable();
 		createUserTable();
+		createLocationTable();
+		createLocationRequestTable();
 
 		//Listeners
 		new InventoryClicked(this);
 		new JoinEvent(this);
 		new LeaveEvent(this);
+		new PlayerInteract(this);
+
+		//Bungeecord
+		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
 		//Commands
 		getCommand("claim").setExecutor(new Claim());
@@ -85,21 +110,63 @@ public class Main extends JavaPlugin {
 		getCommand("adminclaim").setExecutor(new Adminclaim());
 		getCommand("addtodatabase").setExecutor(new AddToDatabase());
 		getCommand("tpblock").setExecutor(new TPBlock());
-		
+
 		getCommand("locationrequest").setExecutor(new RequestLocation());
 		getCommand("addlocation").setExecutor(new AddLocation());
 		getCommand("removelocation").setExecutor(new RemoveLocation());
 		getCommand("denyrequest").setExecutor(new DenyLocation());
 		getCommand("requests").setExecutor(new Requests());
+		getCommand("navigator").setExecutor(new OpenGui());
+		getCommand("torequest").setExecutor(new GotoRequest());
 
 		//GUI
 		ClaimGui.initialize();
+		EnglandGui.initialize();
+		LocationGui.initialize();
+		LondonGui.initialize();
+		NavigationGui.initialize();
+		NorthernIrelandGui.initialize();
+		OtherGui.initialize();
+		ScotlandGui.initialize();
+		SwitchServerGui.initialize();
+		WalesGui.initialize();
 
 		//Vault
 		setupPermissions();
 
 		//LuckPerms
 		setupLuckPerms();
+
+		//Create gui item				
+		gui = new ItemStack(Material.NETHER_STAR);
+		ItemMeta meta = gui.getItemMeta();
+		meta.setDisplayName(ChatColor.AQUA + "" + ChatColor.BOLD + "Navigation Menu");
+		gui.setItemMeta(meta);
+
+		//1 second timer.
+		this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+			public void run() {
+
+				for (Player p : Bukkit.getOnlinePlayers()) {
+
+					if (!(p.hasPermission("group.jrbuilder"))) {
+						slot5 = p.getInventory().getItem(4);
+
+						if (!(slot5 == null)) {
+							if (slot5.equals(gui)) {
+
+							} else {
+								p.getInventory().setItem(4, gui);
+							}
+						} else {
+							p.getInventory().setItem(4, gui);
+						}
+					}
+
+				}
+
+			}
+		}, 0L, 20L);
 	}
 
 	public void onDisable() {
@@ -126,7 +193,7 @@ public class Main extends JavaPlugin {
 		locationData = config.getString("MySQL_locationData");
 		locationRequestData = config.getString("MySQL_locationRequestData");
 
-		
+
 		try {
 
 			synchronized (this) {
@@ -213,24 +280,24 @@ public class Main extends JavaPlugin {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void createLocationTable() {
 		try {
 			PreparedStatement statement = instance.getConnection().prepareStatement
 					("CREATE TABLE IF NOT EXISTS " + locationData
-							+ " ( LOCATION TEXT NOT NULL , CATEGORY TEXT NOT NULL , SUBCATEGORY TEXT NOT NULL , X DOUBLE NOT NULL , Y DOUBLE NOT NULL , Z DOUBLE NOT NULL , PITCH FLOAT NOT NULL , YAW FLOAT NOT NULL , PITCH  NOT NULL , UNIQUE (LOCATION))");
+							+ " (LOCATION VARCHAR(128) NOT NULL , CATEGORY VARCHAR(128) NOT NULL , SUBCATEGORY VARCHAR(128) NOT NULL , X DOUBLE NOT NULL , Y DOUBLE NOT NULL , Z DOUBLE NOT NULL , PITCH FLOAT NOT NULL , YAW FLOAT NOT NULL , UNIQUE (LOCATION))");
 			statement.executeUpdate();
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void createLocationRequestTable() {
 		try {
 			PreparedStatement statement = instance.getConnection().prepareStatement
 					("CREATE TABLE IF NOT EXISTS " + locationRequestData
-							+ " ( LOCATION TEXT NOT NULL , X DOUBLE NOT NULL , Y DOUBLE NOT NULL , Z DOUBLE NOT NULL , PITCH FLOAT NOT NULL , YAW FLOAT NOT NULL , PITCH  NOT NULL");
+							+ " (LOCATION VARCHAR(128) NOT NULL , X DOUBLE NOT NULL , Y DOUBLE NOT NULL , Z DOUBLE NOT NULL , PITCH FLOAT NOT NULL , YAW FLOAT NOT NULL , UNIQUE (LOCATION))");
 			statement.executeUpdate();
 
 		} catch (SQLException e) {

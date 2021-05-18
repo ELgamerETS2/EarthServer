@@ -7,6 +7,8 @@ MySQL_username: root
 MySQL_password: password
 MySQL_claimData: claim_data
 MySQL_permissionData: permission_data
+MySQL_locationData: location_data
+MySQL_locationRequestData: location_request_data
 
 #Other
 

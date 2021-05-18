@@ -16,63 +16,68 @@ public class AddLocation implements CommandExecutor {
 
 		if (!(sender instanceof Player)) {
 			sender.sendMessage("This command cannot be sent from the console!");
-			return false;
+			return true;
 		}
-		
+
 		Player p = (Player) sender;
-		
+
 		if (!(p.hasPermission("earthserver.location.add"))) {
 			p.sendMessage(ChatColor.RED + "You do not have permission for this command!");
 			return true;
 		}
-		
-		if (args.length < 3) {
+
+		if (args.length < 3 || args.length > 4) {
 			p.sendMessage(ChatColor.RED + "/addlocation <name> <category> <subcategory> [requestName]");
 			return true;
 		}
-		
+
 		if (!(args[1].equalsIgnoreCase("london") || 
 				args[1].equalsIgnoreCase("england") || 
 				args[1].equalsIgnoreCase("wales") ||
 				args[1].equalsIgnoreCase("scotland") ||
 				args[1].equalsIgnoreCase("northern-ireland") ||
 				args[1].equalsIgnoreCase("other"))) {
-			
+
 			p.sendMessage(ChatColor.RED + "Category must be one of the following:");
 			p.sendMessage(ChatColor.RED + "England, Scotland, Wales, Northern-Ireland, London or Other");
 			return true;
-			
+
 		}	
-		
+
 		if (args.length == 4) {
-			if (!(LocationSQL.requestExists(args[0]))) {
+			if (!(LocationSQL.requestExists(args[3]))) {
 				p.sendMessage("This location has not been requested");
 				return true;
-			}
-		} else {
-			if (LocationSQL.locationExists(args[0])) {
-				p.sendMessage("This location has already been added");
+			} else {
+				if (LocationSQL.locationExists(args[0])) {
+					p.sendMessage("This location has already been added");
+					return true;
+				}
+
+				Location l = LocationSQL.getRequestLocation(args[3]);
+
+				if (LocationSQL.addLocation(args[0], args[1], args[2], l)) {
+					p.sendMessage(ChatColor.GREEN + "The location " + args[0] + " has been added to the navigation menu in category " + args[1] + " and subcategory " + args[2]);
+				}
 				return true;
-			}
-			
-			Location l = LocationSQL.getRequestLocation(args[3]);
-			
-			LocationSQL.addLocation(args[0], args[1], args[2], l);	
-			return true;
-			
+			}	
 		}
-		
+
 		if (args.length != 3) {
 			p.sendMessage(ChatColor.RED + "/addlocation <name> <category> <subcategory> [requestName]");
 			return true;
 		}
-		
+
 		if (LocationSQL.locationExists(args[0])) {
 			p.sendMessage("This location has already been added");
 			return true;
 		}
-		
-		LocationSQL.addLocation(args[0], args[1], args[2], p.getLocation());	
+
+		if (LocationSQL.addLocation(args[0], args[1], args[2], p.getLocation())) {
+			p.sendMessage(ChatColor.GREEN + "The location " + args[0] + " has been added to the navigation menu in category " + args[1] + " and subcategory " + args[2]);
+		} else {
+			p.sendMessage(ChatColor.RED + "An error has occured, please try again.");
+		}
 		return true;
 	}
 
