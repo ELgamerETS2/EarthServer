@@ -33,8 +33,11 @@ public class InventoryClicked implements Listener {
 	@EventHandler
 	public void onClick(InventoryClickEvent e) {
 		
-		
 		if (e.getCurrentItem() == null) {
+			return;
+		}
+		
+		if (e.getCurrentItem().hasItemMeta() == false) {
 			return;
 		}
 		

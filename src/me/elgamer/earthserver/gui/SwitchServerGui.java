@@ -47,7 +47,7 @@ public class SwitchServerGui {
 				ChatColor.WHITE + "Current minigames: Hide'n'Seek.",
 				ChatColor.WHITE + "Supports 1.12.2 - 1.16.5.");	
 
-		Utils.createItem(inv, Material.SPRUCE_DOOR, 1, 27, ChatColor.AQUA + "" + ChatColor.BOLD + "Return", 
+		Utils.createItem(inv, Material.SPRUCE_DOOR_ITEM, 1, 27, ChatColor.AQUA + "" + ChatColor.BOLD + "Return", 
 				Utils.chat("&fGo back to the navigation menu."));	
 
 		toReturn.setContents(inv.getContents());

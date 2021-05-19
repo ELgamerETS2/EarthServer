@@ -36,13 +36,13 @@ public class LocationGui {
 			}
 
 			if (LocationSQL.CategoryCount("london") != 0) {
-				Utils.createItem(inv, Material.GRAY_GLAZED_TERRACOTTA, 1, 12, ChatColor.AQUA + "" + ChatColor.BOLD + "London", "Locations in London");	
+				Utils.createItem(inv, Material.GRAY_GLAZED_TERRACOTTA, 1, 12, ChatColor.AQUA + "" + ChatColor.BOLD + "London", Utils.chat("&fLocations in London"));	
 			}
 
 		} else {
 
 			if (LocationSQL.CategoryCount("london") != 0 || LocationSQL.CategoryCount("england") != 0) {
-				Utils.createItem(inv, Material.GREEN_GLAZED_TERRACOTTA, 1, 12, ChatColor.AQUA + "" + ChatColor.BOLD + "England", "Locations in England");
+				Utils.createItem(inv, Material.GREEN_GLAZED_TERRACOTTA, 1, 12, ChatColor.AQUA + "" + ChatColor.BOLD + "England", Utils.chat("&fLocations in England"));
 			}
 
 		}
@@ -50,30 +50,30 @@ public class LocationGui {
 		if (LocationSQL.CategoryCount("wales") + LocationSQL.CategoryCount("scotland") + LocationSQL.CategoryCount("northern-ireland") + LocationSQL.CategoryCount("other") > 21) {
 
 			if (LocationSQL.CategoryCount("other") != 0) {
-				Utils.createItem(inv, Material.ORANGE_GLAZED_TERRACOTTA, 1, 13, ChatColor.AQUA + "" + ChatColor.BOLD + "Other", "Locations not in the 4 main countries of the UK");
+				Utils.createItem(inv, Material.ORANGE_GLAZED_TERRACOTTA, 1, 13, ChatColor.AQUA + "" + ChatColor.BOLD + "Other", Utils.chat("&fLocations not in the 4 main countries of the UK"));
 			}
 			
 			if (LocationSQL.CategoryCount("scotland") != 0) {
-				Utils.createItem(inv, Material.MAGENTA_GLAZED_TERRACOTTA, 1, 15, ChatColor.AQUA + "" + ChatColor.BOLD + "Scotland", "Locations in Scotland");
+				Utils.createItem(inv, Material.MAGENTA_GLAZED_TERRACOTTA, 1, 15, ChatColor.AQUA + "" + ChatColor.BOLD + "Scotland", Utils.chat("&fLocations in Scotland"));
 			}
 			
 			if (LocationSQL.CategoryCount("wales") != 0) {
-				Utils.createItem(inv, Material.RED_GLAZED_TERRACOTTA, 1, 17, ChatColor.AQUA + "" + ChatColor.BOLD + "Wales", "Locations in Wales");
+				Utils.createItem(inv, Material.RED_GLAZED_TERRACOTTA, 1, 17, ChatColor.AQUA + "" + ChatColor.BOLD + "Wales", Utils.chat("&fLocations in Wales"));
 			}
 			
 			if (LocationSQL.CategoryCount("northern-ireland") != 0) {
-				Utils.createItem(inv, Material.LIGHT_BLUE_GLAZED_TERRACOTTA, 1, 16, ChatColor.AQUA + "" + ChatColor.BOLD + "Northern Ireland", "Locations in Northern Ireland");
+				Utils.createItem(inv, Material.LIGHT_BLUE_GLAZED_TERRACOTTA, 1, 16, ChatColor.AQUA + "" + ChatColor.BOLD + "Northern Ireland", Utils.chat("&fLocations in Northern Ireland"));
 			}
 			
 		} else {
 
 			if (LocationSQL.CategoryCount("scotland") != 0 || LocationSQL.CategoryCount("wales") != 0 || LocationSQL.CategoryCount("northern-ireland") != 0 || LocationSQL.CategoryCount("other") != 0) {
-				Utils.createItem(inv, Material.ORANGE_GLAZED_TERRACOTTA, 1, 16, ChatColor.AQUA + "" + ChatColor.BOLD + "Other", "Locations not in England");
+				Utils.createItem(inv, Material.ORANGE_GLAZED_TERRACOTTA, 1, 16, ChatColor.AQUA + "" + ChatColor.BOLD + "Other", Utils.chat("&fLocations not in England"));
 			}
 
 		}
 
-		Utils.createItem(inv, Material.SPRUCE_DOOR, 1, 27, ChatColor.AQUA + "" + ChatColor.BOLD + "Return", 
+		Utils.createItem(inv, Material.SPRUCE_DOOR_ITEM, 1, 27, ChatColor.AQUA + "" + ChatColor.BOLD + "Return", 
 				Utils.chat("&fGo back to the navigation menu."));	
 
 		toReturn.setContents(inv.getContents());
@@ -82,6 +82,8 @@ public class LocationGui {
 
 	public static void clicked(Player p, int slot, ItemStack clicked, Inventory inv) {
 
+		if (clicked == null) {return;}
+		
 		if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.AQUA + "" + ChatColor.BOLD + "England")) {
 
 			//Will open the build location gui.

@@ -82,7 +82,7 @@ public class Main extends JavaPlugin {
 		mysqlSetup();
 
 		//Spawn
-		spawn = new Location(Bukkit.getWorld(config.getString("World_Name")),config.getDouble("Spawn.x"), config.getDouble("Spawn.y"), config.getDouble("Spawn.z"));
+		spawn = new Location(Bukkit.getWorld(config.getString("World_Name")),config.getDouble("Spawn.x"), config.getDouble("Spawn.y"), config.getDouble("Spawn.z"), config.getLong("Spawn.yaw"), config.getLong("Spawn.pitch"));
 
 		//Creates the mysql table if not existing
 		createClaimTable();

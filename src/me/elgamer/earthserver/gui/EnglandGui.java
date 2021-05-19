@@ -39,7 +39,7 @@ public class EnglandGui {
 
 			for (String[] s : locations) {
 
-				Utils.createItemByte(inv, Material.CONCRETE, 5, 1, i, ChatColor.AQUA + "" + ChatColor.BOLD + s[0] + ", " + s[1], "Click to teleport to this location");
+				Utils.createItemByte(inv, Material.CONCRETE, 5, 1, i, ChatColor.AQUA + "" + ChatColor.BOLD + s[0] + ", " + s[1], Utils.chat("&fClick to teleport to this location"));
 
 				i++;
 
@@ -62,7 +62,7 @@ public class EnglandGui {
 
 				for (String[] s : locations) {
 
-					Utils.createItemByte(inv, Material.CONCRETE, 5, 1, i, ChatColor.AQUA + "" + ChatColor.BOLD + s[0] + ", " + s[1], "Click to teleport to this location");
+					Utils.createItemByte(inv, Material.CONCRETE, 5, 1, i, ChatColor.AQUA + "" + ChatColor.BOLD + s[0] + ", " + s[1], Utils.chat("&fClick to teleport to this location"));
 
 					i++;
 
@@ -82,7 +82,7 @@ public class EnglandGui {
 
 				for (String[] s : locations) {
 
-					Utils.createItemByte(inv, Material.CONCRETE, 5, 1, i, ChatColor.AQUA + "" + ChatColor.BOLD + s[0] + ", " + s[1] + ", " + "London", "Click to teleport to this location");
+					Utils.createItemByte(inv, Material.CONCRETE, 5, 1, i, ChatColor.AQUA + "" + ChatColor.BOLD + s[0] + ", " + s[1] + ", " + "London", Utils.chat("&fClick to teleport to this location"));
 
 					i++;
 
@@ -95,7 +95,7 @@ public class EnglandGui {
 
 		}
 
-		Utils.createItem(inv, Material.SPRUCE_DOOR, 1, 45, ChatColor.AQUA + "" + ChatColor.BOLD + "Return", 
+		Utils.createItem(inv, Material.SPRUCE_DOOR_ITEM, 1, 45, ChatColor.AQUA + "" + ChatColor.BOLD + "Return", 
 				Utils.chat("&fGo back to the location menu."));	
 
 		toReturn.setContents(inv.getContents());
@@ -107,7 +107,7 @@ public class EnglandGui {
 		if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.AQUA + "" + ChatColor.BOLD + "Return")) {
 
 			p.closeInventory();
-			p.openInventory(NavigationGui.GUI(p));
+			p.openInventory(LocationGui.GUI(p));
 
 		} else {
 
